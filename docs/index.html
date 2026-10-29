@@ -330,7 +330,7 @@ footer a { color: var(--text-secondary); }
     </svg>
 
     <div class="hero-top">
-      <div class="eyebrow">Portfólio · Ciência de dados · Dr. Thiago Damasceno Silva</div>
+      <div class="eyebrow">Ciência de dados · Dr. Thiago Damasceno Silva</div>
       <button class="theme-btn" id="themeBtn" type="button" aria-label="Alternar tema claro/escuro">◐ Tema</button>
     </div>
     <h1>Vai chover amanhã em Uberaba?</h1>
@@ -520,7 +520,7 @@ footer a { color: var(--text-secondary); }
           <g id="folhas"></g>
         </svg>
       </div>
-      <p class="caption">Esquema didático com limiares aproximados: mostra o tipo de regra que o modelo aprende — a previsão do JMA decide o primeiro corte e a umidade medida pelo INMET refina a decisão.</p>
+      <p class="caption">Esquema didático com limiares aproximados: mostra o tipo de regra que o modelo aprende, a previsão do JMA decide o primeiro corte e a umidade medida pelo INMET refina a decisão.</p>
     </div>
   </section>
 
@@ -560,7 +560,7 @@ footer a { color: var(--text-secondary); }
   <footer>
     Dados meteorológicos: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (JMA GSM, CC BY 4.0) ·
     Medições: <a href="https://portal.inmet.gov.br/" target="_blank" rel="noopener">INMET</a>, estação A568 ·
-    Projeto de Thiago Damasceno Silva. Previsão experimental — não substitui os avisos oficiais da Defesa Civil e do INMET.
+    Autor do projeto: Dr. Thiago Damasceno Silva. Previsão experimental, não substitui os avisos oficiais da Defesa Civil e do INMET.
   </footer>
 </main>
 
@@ -829,7 +829,7 @@ footer a { color: var(--text-secondary); }
     const serie = b.serie.slice(-120).map(s => ({ data_alvo: s.data_alvo, p: s.prob, choveu: s.choveu, obs: s.chuva_obs_mm, jma: s.chuva_jma_mm }));
     linhaProb($("chBacktest"), serie, { altura: 260, marcar: d => d.choveu === 1,
       dica: d => `<b>${dCurta(d.data_alvo)}</b><br>Previsto: <b>${pct(d.p)}</b><br>Observado (INMET): <b>${fmt(d.obs)} mm</b>${d.choveu ? " ☂" : ""}<br><span class="k">JMA previu</span> ${fmt(d.jma)} mm` });
-    $("subBacktest").textContent = `Últimos 120 dias do teste (${dCurta(serie[0].data_alvo)} a ${dCurta(serie[serie.length - 1].data_alvo)} de ${serie[serie.length - 1].data_alvo.slice(0, 4)}) — dias que não entraram no treino`;
+    $("subBacktest").textContent = `Últimos 120 dias do teste (${dCurta(serie[0].data_alvo)} a ${dCurta(serie[serie.length - 1].data_alvo)} de ${serie[serie.length - 1].data_alvo.slice(0, 4)})`;
     const nomes = {
       "INMET real": "Este dashboard (medições do INMET + previsão do JMA)",
       "JMA bruto (dashboard)": "Plano B: dias sem medição (JMA no lugar do INMET)",
