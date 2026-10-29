@@ -60,11 +60,21 @@ def _preencher_datas(page, ini, fim, diag):
             pass
     diag["inputs"] = info
 
-    datas = page.locator("input[type=date]")
-    if datas.count() >= 2:
-        datas.nth(0).fill(ini.strftime("%Y-%m-%d"))
-        datas.nth(1).fill(fim.strftime("%Y-%m-%d"))
-        diag["datas_preenchidas"] = "input[type=date]"
+    # Campos de data da página TEMPO: input[type=date], dentro de um menu lateral que pode estar recolhido.
+    # Preenche via JavaScript (funciona mesmo oculto) e dispara os eventos que o React escuta.
+    n = page.evaluate("""([ini, fim]) => {
+        const campos = [...document.querySelectorAll('input[type=date]')];
+        const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+        const valores = campos.length >= 2 ? [ini, fim] : [fim];
+        campos.slice(0, valores.length).forEach((c, i) => {
+            setter.call(c, valores[i]);
+            c.dispatchEvent(new Event('input', { bubbles: true }));
+            c.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+        return campos.length;
+    }""", [ini.strftime("%Y-%m-%d"), fim.strftime("%Y-%m-%d")])
+    if n:
+        diag["datas_preenchidas"] = f"input[type=date] via JavaScript ({n} campo(s))"
         return
     # campos de texto com data dd/mm/aaaa ou aaaa-mm-dd
     alvos = [i for i, x in enumerate(info)
@@ -115,13 +125,14 @@ def coletar_pagina():
             except Exception as e:
                 diag["erro_datas"] = str(e)[:200]
 
-            # Botão que gera a tabela (texto pode variar)
-            for rotulo in ("Gerar Tabela", "Gerar tabela", "Gerar", "Pesquisar", "Buscar", "Consultar"):
-                b = page.get_by_role("button", name=re.compile(rotulo, re.I))
-                if b.count():
-                    b.first.click()
-                    diag["botao_gerar"] = rotulo
-                    break
+            # Botão que gera a tabela — pode estar no menu lateral recolhido, então o clique é via JavaScript
+            diag["botao_gerar"] = page.evaluate("""() => {
+                const alvos = [...document.querySelectorAll('button, .ui.button, a.button')];
+                const b = alvos.find(e => /gerar|pesquisar|buscar|consultar/i.test(e.textContent || ''));
+                if (!b) return null;
+                b.click();
+                return (b.textContent || '').trim();
+            }""")
             page.wait_for_load_state("networkidle", timeout=60_000)
             page.wait_for_timeout(3_000)
 
@@ -140,7 +151,10 @@ def coletar_pagina():
         finally:
             try:
                 page.screenshot(path=str(DIR_DIAG / "pagina.png"), full_page=True)
-                diag["botoes"] = [t.strip() for t in page.locator("button, a.button, .ui.button").all_inner_texts()][:40]
+                diag["botoes"] = page.evaluate("""() => [...document.querySelectorAll('button, a.button, .ui.button')]
+                    .map(e => (e.textContent || '').trim()).slice(0, 40)""")
+                diag["datas_na_pagina"] = page.evaluate("""() => [...document.querySelectorAll('input[type=date]')]
+                    .map(e => e.value)""")
             except Exception:
                 pass
             nav.close()
