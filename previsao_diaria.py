@@ -50,7 +50,10 @@ def main():
     amanha = hoje + pd.Timedelta(days=1)
 
     pacote = joblib.load(ARQ_MODELO)
-    mapa = json.loads(ARQ_MAPA.read_text(encoding="utf-8"))["variaveis"]
+    mapa_json = json.loads(ARQ_MAPA.read_text(encoding="utf-8"))
+    mapa = mapa_json["variaveis"]
+    # limiar escolhido para o cenário JMA (notebook de preparação); senão, o do modelo
+    limiar = mapa_json.get("limiar_dashboard", pacote["limiar"])
 
     h_obs, h_prev = pc.baixar_operacional(past_days=40, forecast_days=3)
     tabela = pc.montar_tabela(h_obs, h_prev, mapa)
@@ -80,9 +83,9 @@ def main():
         "data_base": str(hoje.date()),
         "data_alvo": str(amanha.date()),
         "probabilidade": round(prob, 3),
-        "categoria": categoria(prob, pacote["limiar"]),
-        "limiar": pacote["limiar"],
-        "vai_chover": bool(prob >= pacote["limiar"]),
+        "categoria": categoria(prob, limiar),
+        "limiar": limiar,
+        "vai_chover": bool(prob >= limiar),
         "jma_amanha": {
             "chuva_mm": num(X.get(nwp + "precip_mm")),
             "horas_chuva": num(X.get(nwp + "horas_chuva"), 0),
