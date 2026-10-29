@@ -1,6 +1,6 @@
 {
  "status": "ok",
- "gerado_em": "2026-10-29T17:53-03:00",
+ "gerado_em": "2026-10-29T18:23-03:00",
  "data_base": "2026-10-29",
  "data_alvo": "2026-10-30",
  "probabilidade": 0.504,
@@ -16,8 +16,9 @@
  },
  "condicoes_hoje": {
   "chuva_mm": 34.6,
-  "chuva_acum_7d_mm": 77.6,
-  "chuva_acum_30d_mm": 198.6,
+  "chuva_acum_7d_mm": 73.4,
+  "chuva_acum_30d_mm": 194.4,
+  "dias_medidos_7d": 6,
   "dias_sem_chuva": 0.0,
   "umid_media_pct": 97.0,
   "temp_max_c": 25.4
@@ -25,7 +26,7 @@
  "observacoes": {
   "fonte_hoje": "JMA",
   "dias_inmet_30d": 28,
-  "ultima_medicao_utc": "2026-10-29 20:00:00"
+  "ultima_medicao_utc": "2026-10-29 21:00:00"
  },
  "horario_amanha": [
   {
