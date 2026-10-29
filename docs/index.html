@@ -298,7 +298,7 @@ footer a, .note a { color: var(--text-secondary); }
     for (let i = 0; i <= 4; i++) {
       const v = vmax * i / 4, y = m.t + ih - ih * i / 4;
       if (i > 0) el("line", { x1: m.l, x2: W - m.r, y1: y, y2: y, class: "gridline" }, ax);
-      el("text", { x: m.l - 6, y: y + 4, "text-anchor": "end" }, ax).textContent = fmt(v, Number.isInteger(+v.toFixed(6)) ? 0 : (v * 10 % 1 ? 2 : 1));
+      el("text", { x: m.l - 6, y: y + 4, "text-anchor": "end" }, ax).textContent = fmt(v, passoY >= 1 ? 0 : passoY >= 0.1 ? 1 : 2);
     }
     const bw = iw / dados.length, gap = Math.min(2, bw * .2);
     const tip = tooltip(container);
@@ -431,7 +431,7 @@ footer a, .note a { color: var(--text-secondary); }
     const ob = p.observacoes || {};
     $("infoModelo").textContent = `Atualizado em ${p.gerado_em ? p.gerado_em.replace("T", " ") : "—"} · modelo treinado até ${m.treinado_ate || "—"} · fonte: ${m.fonte || "—"}` +
       (ob.ultima_medicao_utc ? ` · última medição do INMET: ${ob.ultima_medicao_utc.slice(0, 16)} UTC · dias medidos (30 d): ${ob.dias_inmet_30d}/30` : "") +
-      (p.features_ausentes ? ` · ${p.features_ausentes} variáveis ausentes` : "");
+      (p.features_ausentes ? ` · ${p.features_ausentes} ${p.features_ausentes === 1 ? "variável ausente" : "variáveis ausentes"}` : "");
   }
 
   function renderHistorico(hist) {
@@ -453,14 +453,18 @@ footer a, .note a { color: var(--text-secondary); }
     linhaProb($("chBacktest"), serie, { altura: 260, marcar: d => d.choveu === 1,
       dica: d => `<b>${dCurta(d.data_alvo)}</b><br>Previsto: <b>${pct(d.p)}</b><br>Observado (INMET): <b>${fmt(d.obs)} mm</b>${d.choveu ? " ☂" : ""}<br><span class="k">JMA previu</span> ${fmt(d.jma)} mm` });
     $("subBacktest").textContent = `Últimos 120 dias do teste (${dCurta(serie[0].data_alvo)} a ${dCurta(serie[serie.length - 1].data_alvo)} de ${serie[serie.length - 1].data_alvo.slice(0, 4)}) — dias que não entraram no treino`;
-    const nomes = { "JMA bruto (dashboard)": "Este dashboard (JMA no lugar do INMET)", "JMA bruto": "Este dashboard (JMA no lugar do INMET)",
-      "INMET real": "Com dados reais do INMET",
+    const nomes = {
+      "INMET real": "Este dashboard (medições do INMET + previsão do JMA)",
+      "JMA bruto (dashboard)": "Plano B: dias sem medição (JMA no lugar do INMET)",
+      "JMA bruto": "Plano B: dias sem medição (JMA no lugar do INMET)",
+      "JMA mapeado (dashboard)": "Plano B: dias sem medição (JMA no lugar do INMET)",
       "Previsão numérica pura (JMA)": "Previsão do JMA, sem correção", "Climatologia": "Climatologia (média do mês)" };
-    const ordem = ["JMA bruto (dashboard)", "JMA bruto", "INMET real", "Previsão numérica pura (JMA)", "Climatologia"];
-    let html = "<thead><tr><th>Abordagem</th><th>AUC</th><th>Precisão média</th><th>Acerto ao prever chuva</th></tr></thead><tbody>";
+    const planoB = ["JMA bruto (dashboard)", "JMA bruto", "JMA mapeado (dashboard)"].find(k => b.metricas[k]);
+    const ordem = ["INMET real", planoB, "Previsão numérica pura (JMA)", "Climatologia"].filter(Boolean);
+    let html = "<thead><tr><th>Abordagem</th><th>AUC</th><th>Precisão média</th><th>Acerto quando prevê chuva</th></tr></thead><tbody>";
     ordem.filter(k => b.metricas[k]).forEach(k => {
       const mt = b.metricas[k];
-      html += `<tr class="${k.startsWith("JMA bruto") ? "destaque" : ""}"><td>${nomes[k]}</td><td>${fmt(mt.AUC, 2)}</td><td>${fmt(mt.AP, 2)}</td><td>${pct(mt.precisao)}</td></tr>`;
+      html += `<tr class="${k === "INMET real" ? "destaque" : ""}"><td>${nomes[k]}</td><td>${fmt(mt.AUC, 2)}</td><td>${fmt(mt.AP, 2)}</td><td>${pct(mt.precisao)}</td></tr>`;
     });
     $("tbMetricas").innerHTML = html + "</tbody>";
     $("subMetricas").textContent = `${b.n_dias} dias (${b.periodo.map(s => s.split("-").reverse().join("/")).join(" a ")}). AUC: 0,5 = acaso, 1 = perfeito.`;
