@@ -89,6 +89,16 @@ def main():
                 for d, r in ult.iterrows()]
     ultima_hora = obs_h.dropna(how="all").index.max() if len(obs_h) else None
 
+    # Chuva acumulada SÓ com medições do INMET: dias completos anteriores + o que já foi medido hoje
+    def chuva_medida(dias):
+        anteriores = obs_d["precip_mm"].loc[hoje - pd.Timedelta(days=dias - 1): hoje - pd.Timedelta(days=1)] \
+            if len(obs_d) else pd.Series(dtype=float)
+        h_hoje = obs_h["precip_mm"].copy() if len(obs_h) else pd.Series(dtype=float)
+        h_hoje.index = h_hoje.index - pd.Timedelta(hours=3)
+        parcial_hoje = h_hoje.loc[str(hoje.date())].sum(min_count=1) if len(h_hoje.loc[str(hoje.date()):]) else None
+        valores = list(anteriores.dropna()) + ([parcial_hoje] if parcial_hoje is not None and pd.notna(parcial_hoje) else [])
+        return (num(sum(valores)) if valores else None), len(anteriores.dropna())
+
     nwp = f"nwp_{pc.MODELO}_"
     previsao = {
         "status": "ok",
@@ -108,8 +118,9 @@ def main():
         },
         "condicoes_hoje": {
             "chuva_mm": num(X.get("precip_mm")),
-            "chuva_acum_7d_mm": num(ult["precip_mm"].iloc[-7:].sum(min_count=1)),
-            "chuva_acum_30d_mm": num(dia.loc[hoje - pd.Timedelta(days=29): hoje, "precip_mm"].sum(min_count=1)),
+            "chuva_acum_7d_mm": chuva_medida(7)[0],
+            "chuva_acum_30d_mm": chuva_medida(30)[0],
+            "dias_medidos_7d": chuva_medida(7)[1],
             "dias_sem_chuva": num(X.get("dias_sem_chuva"), 0),
             "umid_media_pct": num(X.get("umid_media_pct"), 0),
             "temp_max_c": num(X.get("temp_max_c")),
