@@ -1,0 +1,5 @@
+{
+ "status": "erro",
+ "erro": "[Errno 2] No such file or directory: '/home/runner/work/previsao-chuva-uberaba/previsao-chuva-uberaba/modelo/modelo_chuva_amanha.joblib'",
+ "erro_em": "2026-10-29T12:24-03:00"
+}
