@@ -22,6 +22,7 @@
   --series-1: #2a78d6;
   --series-2: #eb6834;
   --accent-soft: #cde2fb;
+  --estimado: #9ec5f4;
   --good: #0ca30c;
   --critical: #d03b3b;
   --warning: #fab219;
@@ -41,6 +42,7 @@
     --series-1: #3987e5;
     --series-2: #d95926;
     --accent-soft: #184f95;
+    --estimado: #2a4d7a;
     --shadow: none;
   }
 }
@@ -57,6 +59,7 @@
   --series-1: #3987e5;
   --series-2: #d95926;
   --accent-soft: #184f95;
+  --estimado: #2a4d7a;
   --shadow: none;
 }
 * { box-sizing: border-box; }
@@ -179,7 +182,11 @@ footer a, .note a { color: var(--text-secondary); }
     </div>
     <div class="card">
       <h2>Últimos 14 dias</h2>
-      <p class="sub">Chuva estimada (JMA convertido para a escala da estação INMET)</p>
+      <p class="sub">Chuva diária medida na estação INMET A568 (Uberaba)</p>
+      <div class="legend" id="legRecentes">
+        <span><i style="background:var(--series-1)"></i>Medida (INMET)</span>
+        <span id="legJma" hidden><i style="background:var(--estimado)"></i>Estimada pelo JMA (sem medição)</span>
+      </div>
       <div class="chart" id="chRecentes"></div>
     </div>
   </section>
@@ -187,6 +194,10 @@ footer a, .note a { color: var(--text-secondary); }
   <section class="card">
     <h2>Previsões emitidas pelo dashboard</h2>
     <p class="sub" id="subHist">Probabilidade calculada a cada dia para o dia seguinte</p>
+    <div class="legend">
+      <span><i class="line" style="background:var(--series-1)"></i>Probabilidade prevista</span>
+      <span><i class="dot" style="background:var(--series-2)"></i>Choveu (≥ 1 mm, medido pelo INMET)</span>
+    </div>
     <div class="chart" id="chHistorico"></div>
   </section>
 
@@ -216,7 +227,7 @@ footer a, .note a { color: var(--text-secondary); }
   <section class="card note">
     <h2>Sobre o modelo</h2>
     <p>Um <b>Random Forest</b> foi treinado com a série da estação automática do INMET em Uberaba (A568, 2017–2026) e com as previsões do modelo global japonês <b>JMA GSM</b> emitidas com 1 dia de antecedência. Ele aprende a corrigir os vieses locais da previsão numérica e devolve uma probabilidade calibrada.</p>
-    <p>Como a API pública do INMET não está entregando dados recentes, o dashboard usa o JMA também no lugar das observações do dia, <b>convertido para a escala da estação</b> por mapeamento de quantis. O teste retroativo acima mede o efeito dessa substituição.</p>
+    <p>Todos os dias, o dashboard coleta as <b>medições da estação do INMET</b> (chuva, temperatura, umidade, pressão, vento e radiação) e as combina com a <b>previsão do JMA para amanhã</b> — o mesmo tipo de dado usado no treino. Se a estação ficar sem dados em algum dia, o JMA cobre a lacuna e o gráfico dos últimos 14 dias indica isso.</p>
     <p id="infoModelo" class="mono"></p>
   </section>
 
@@ -273,18 +284,21 @@ footer a, .note a { color: var(--text-secondary); }
   }
 
   // ---------- gráfico de barras (uma série) ----------
-  function barras(container, dados, { rotulo, valor, unidade = "mm", cor = "var(--series-1)", altura = 220, tickCada = 1, dica }) {
+  function barras(container, dados, { rotulo, valor, unidade = "mm", cor = "var(--series-1)", corDe, altura = 220, tickCada = 1, dica }) {
     container.innerHTML = "";
     if (!dados.length) { container.innerHTML = '<div class="empty">Sem dados</div>'; return; }
     const W = Math.max(container.clientWidth, 280), H = altura, m = { t: 12, r: 8, b: 26, l: 34 };
     const iw = W - m.l - m.r, ih = H - m.t - m.b;
-    const vmax = niceMax(Math.max(...dados.map(d => valor(d) || 0)) * 1.05);
+    const bruto = Math.max(...dados.map(d => valor(d) || 0)) * 1.05 / 4;
+    const p10 = Math.pow(10, Math.floor(Math.log10(bruto || 1)));
+    const passoY = [1, 2, 5, 10].map(m => m * p10).find(v => v >= bruto) || 10 * p10;
+    const vmax = bruto > 0 ? passoY * 4 : 1;
     const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" }, container);
     const ax = el("g", { class: "axis" }, svg);
     for (let i = 0; i <= 4; i++) {
       const v = vmax * i / 4, y = m.t + ih - ih * i / 4;
       if (i > 0) el("line", { x1: m.l, x2: W - m.r, y1: y, y2: y, class: "gridline" }, ax);
-      el("text", { x: m.l - 6, y: y + 4, "text-anchor": "end" }, ax).textContent = fmt(v, vmax < 4 ? 1 : 0);
+      el("text", { x: m.l - 6, y: y + 4, "text-anchor": "end" }, ax).textContent = fmt(v, Number.isInteger(+v.toFixed(6)) ? 0 : (v * 10 % 1 ? 2 : 1));
     }
     const bw = iw / dados.length, gap = Math.min(2, bw * .2);
     const tip = tooltip(container);
@@ -292,7 +306,7 @@ footer a, .note a { color: var(--text-secondary); }
       const v = valor(d), x = m.l + i * bw;
       if (v != null && v > 0) {
         const h = Math.max(ih * v / vmax, 1), y = m.t + ih - h, w = Math.max(bw - gap, 1), r = Math.min(4, w / 2, h);
-        el("path", { d: `M${x + gap / 2},${y + h} V${y + r} q0,-${r} ${r},-${r} H${x + gap / 2 + w - r} q${r},0 ${r},${r} V${y + h} Z`, fill: cor }, svg);
+        el("path", { d: `M${x + gap / 2},${y + h} V${y + r} q0,-${r} ${r},-${r} H${x + gap / 2 + w - r} q${r},0 ${r},${r} V${y + h} Z`, fill: corDe ? corDe(d) : cor }, svg);
       }
       if (i % tickCada === 0) el("text", { x: x + bw / 2, y: H - 8, "text-anchor": "middle" }, ax).textContent = rotulo(d);
       const hit = el("rect", { x, y: m.t, width: bw, height: ih, fill: "transparent" }, svg);
@@ -384,7 +398,11 @@ footer a, .note a { color: var(--text-secondary); }
       $("status").classList.add("show");
       $("statusTxt").textContent = `A atualização de ${p.erro_em ? p.erro_em.slice(0, 10).split("-").reverse().join("/") : "hoje"} falhou (${p.erro}). Exibindo a última previsão válida.`;
     }
-    if (p.probabilidade == null) return;
+    if (p.probabilidade == null) {
+      $("heroDate").textContent = "Previsão ainda não disponível";
+      $("heroNum").innerHTML = '<small>—</small>';
+      return;
+    }
     $("heroDate").textContent = "Amanhã · " + dLonga(p.data_alvo);
     $("heroNum").innerHTML = Math.round(p.probabilidade * 100) + "<small>%</small>";
     $("heroCat").textContent = p.categoria;
@@ -397,25 +415,37 @@ footer a, .note a { color: var(--text-secondary); }
     $("kpisAmanha").innerHTML =
       kpi("Chuva prevista", fmt(j.chuva_mm), " mm") + kpi("Horas com chuva", fmt(j.horas_chuva, 0), " h") +
       kpi("Nebulosidade média", fmt(j.nuvens_pct, 0), "%") + kpi("Temperatura máxima", fmt(j.temp_max_c), " °C") +
-      kpi("Chuva nos últimos 7 dias", fmt(h.chuva_acum_7d_mm, 0), " mm") + kpi("Dias seguidos sem chuva", fmt(h.dias_sem_chuva, 0), "");
+      kpi("Chuva medida nos últimos 7 dias", fmt(h.chuva_acum_7d_mm, 0), " mm") + kpi("Dias seguidos sem chuva", fmt(h.dias_sem_chuva, 0), "");
     const hr = p.horario_amanha || [];
     barras($("chHorario"), hr, { rotulo: d => d.hora.slice(0, 2) + "h", valor: d => d.chuva_mm, tickCada: 3,
       dica: d => `<b>${d.hora}</b><br>Chuva: <b>${fmt(d.chuva_mm, 1)} mm</b><br><span class="k">Nuvens</span> ${fmt(d.nuvens_pct, 0)}% · <span class="k">Temp.</span> ${fmt(d.temp_c)} °C` });
     $("subHorario").textContent = "Amanhã (" + dCurta(p.data_alvo) + ") · modelo JMA GSM · horário de Brasília";
-    barras($("chRecentes"), p.ultimos_dias || [], { rotulo: d => dCurta(d.data).split(" ")[0], valor: d => d.chuva_est_mm, tickCada: 1,
-      dica: d => `<b>${dCurta(d.data)}</b><br>Chuva estimada: <b>${fmt(d.chuva_est_mm)} mm</b><br><span class="k">Máx.</span> ${fmt(d.temp_max_c)} °C · <span class="k">Umid.</span> ${fmt(d.umid_media_pct, 0)}%` });
+    const ud = p.ultimos_dias || [];
+    const valorDia = d => d.chuva_mm != null ? d.chuva_mm : d.chuva_est_mm;      // compatível com versões antigas
+    const medido = d => d.fonte ? d.fonte === "INMET" : false;
+    $("legJma").hidden = !ud.some(d => !medido(d));
+    barras($("chRecentes"), ud, { rotulo: d => dCurta(d.data).split(" ")[0], valor: valorDia, tickCada: 1,
+      corDe: d => medido(d) ? "var(--series-1)" : "var(--estimado)",
+      dica: d => `<b>${dCurta(d.data)}</b><br>Chuva ${medido(d) ? "medida" : "estimada (JMA)"}: <b>${fmt(valorDia(d))} mm</b><br><span class="k">Máx.</span> ${fmt(d.temp_max_c)} °C · <span class="k">Umid.</span> ${fmt(d.umid_media_pct, 0)}%` });
     const m = p.modelo || {};
+    const ob = p.observacoes || {};
     $("infoModelo").textContent = `Atualizado em ${p.gerado_em ? p.gerado_em.replace("T", " ") : "—"} · modelo treinado até ${m.treinado_ate || "—"} · fonte: ${m.fonte || "—"}` +
+      (ob.ultima_medicao_utc ? ` · última medição do INMET: ${ob.ultima_medicao_utc.slice(0, 16)} UTC · dias medidos (30 d): ${ob.dias_inmet_30d}/30` : "") +
       (p.features_ausentes ? ` · ${p.features_ausentes} variáveis ausentes` : "");
   }
 
   function renderHistorico(hist) {
-    const dados = hist.map(h => ({ data_alvo: h.data_alvo, p: h.probabilidade, mm: h.jma_chuva_mm }));
-    $("subHist").textContent = dados.length < 7
+    const dados = hist.map(h => ({ data_alvo: h.data_alvo, p: h.probabilidade, mm: h.jma_chuva_mm,
+      lim: h.limiar, obs: h.chuva_obs_mm, choveu: h.choveu }));
+    const verif = dados.filter(d => d.choveu != null && d.lim != null);
+    const acertos = verif.filter(d => (d.p >= d.lim) === d.choveu).length;
+    const placar = verif.length ? ` · acertou ${acertos} de ${verif.length} dias já verificados (${Math.round(100 * acertos / verif.length)}%)` : "";
+    $("subHist").textContent = (dados.length < 7
       ? `Probabilidade calculada a cada dia para o dia seguinte — o histórico começa a se formar a partir de ${dados.length ? dCurta(dados[0].data_alvo) : "hoje"}`
-      : "Probabilidade calculada a cada dia para o dia seguinte (últimos 180 dias)";
-    linhaProb($("chHistorico"), dados.slice(-180), { altura: dados.length < 7 ? 160 : 240,
-      dica: d => `<b>${dCurta(d.data_alvo)}</b><br>Probabilidade: <b>${pct(d.p)}</b><br><span class="k">JMA previu</span> ${fmt(d.mm)} mm` });
+      : "Probabilidade calculada a cada dia para o dia seguinte (últimos 180 dias)") + placar;
+    linhaProb($("chHistorico"), dados.slice(-180), { altura: dados.length < 7 ? 160 : 240, marcar: d => d.choveu === true,
+      dica: d => `<b>${dCurta(d.data_alvo)}</b><br>Probabilidade: <b>${pct(d.p)}</b><br><span class="k">JMA previu</span> ${fmt(d.mm)} mm` +
+        (d.obs != null ? `<br>Medido (INMET): <b>${fmt(d.obs)} mm</b>${d.choveu ? " ☂" : ""}` : `<br><span class="k">Aguardando medição</span>`) });
   }
 
   function renderBacktest(b) {
@@ -423,13 +453,14 @@ footer a, .note a { color: var(--text-secondary); }
     linhaProb($("chBacktest"), serie, { altura: 260, marcar: d => d.choveu === 1,
       dica: d => `<b>${dCurta(d.data_alvo)}</b><br>Previsto: <b>${pct(d.p)}</b><br>Observado (INMET): <b>${fmt(d.obs)} mm</b>${d.choveu ? " ☂" : ""}<br><span class="k">JMA previu</span> ${fmt(d.jma)} mm` });
     $("subBacktest").textContent = `Últimos 120 dias do teste (${dCurta(serie[0].data_alvo)} a ${dCurta(serie[serie.length - 1].data_alvo)} de ${serie[serie.length - 1].data_alvo.slice(0, 4)}) — dias que não entraram no treino`;
-    const nomes = { "JMA mapeado (dashboard)": "Este dashboard (JMA no lugar do INMET)", "INMET real": "Com dados reais do INMET",
+    const nomes = { "JMA bruto (dashboard)": "Este dashboard (JMA no lugar do INMET)", "JMA bruto": "Este dashboard (JMA no lugar do INMET)",
+      "INMET real": "Com dados reais do INMET",
       "Previsão numérica pura (JMA)": "Previsão do JMA, sem correção", "Climatologia": "Climatologia (média do mês)" };
-    const ordem = ["JMA mapeado (dashboard)", "INMET real", "Previsão numérica pura (JMA)", "Climatologia"];
+    const ordem = ["JMA bruto (dashboard)", "JMA bruto", "INMET real", "Previsão numérica pura (JMA)", "Climatologia"];
     let html = "<thead><tr><th>Abordagem</th><th>AUC</th><th>Precisão média</th><th>Acerto ao prever chuva</th></tr></thead><tbody>";
     ordem.filter(k => b.metricas[k]).forEach(k => {
       const mt = b.metricas[k];
-      html += `<tr class="${k.startsWith("JMA mapeado") ? "destaque" : ""}"><td>${nomes[k]}</td><td>${fmt(mt.AUC, 2)}</td><td>${fmt(mt.AP, 2)}</td><td>${pct(mt.precisao)}</td></tr>`;
+      html += `<tr class="${k.startsWith("JMA bruto") ? "destaque" : ""}"><td>${nomes[k]}</td><td>${fmt(mt.AUC, 2)}</td><td>${fmt(mt.AP, 2)}</td><td>${pct(mt.precisao)}</td></tr>`;
     });
     $("tbMetricas").innerHTML = html + "</tbody>";
     $("subMetricas").textContent = `${b.n_dias} dias (${b.periodo.map(s => s.split("-").reverse().join("/")).join(" a ")}). AUC: 0,5 = acaso, 1 = perfeito.`;
