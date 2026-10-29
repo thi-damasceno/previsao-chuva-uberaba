@@ -1,21 +1,21 @@
 {
  "status": "ok",
- "gerado_em": "2026-10-29T12:41-03:00",
+ "gerado_em": "2026-10-29T16:30-03:00",
  "data_base": "2026-10-29",
  "data_alvo": "2026-10-30",
- "probabilidade": 0.71,
- "categoria": "Provável",
- "limiar": 0.34,
+ "probabilidade": 0.504,
+ "categoria": "Possível",
+ "limiar": 0.31,
  "vai_chover": true,
  "jma_amanha": {
-  "chuva_mm": 8.4,
-  "horas_chuva": 16.0,
-  "nuvens_pct": 70.0,
-  "umid_pct": 84.0,
-  "temp_max_c": 25.9
+  "chuva_mm": 4.4,
+  "horas_chuva": 10.0,
+  "nuvens_pct": 58.0,
+  "umid_pct": 80.0,
+  "temp_max_c": 28.4
  },
  "condicoes_hoje": {
-  "chuva_est_mm": 86.9,
+  "chuva_est_mm": 87.9,
   "chuva_acum_7d_mm": 145.7,
   "chuva_acum_30d_mm": 312.4,
   "dias_sem_chuva": 0.0,
@@ -25,147 +25,147 @@
  "horario_amanha": [
   {
    "hora": "00:00",
-   "chuva_mm": 0.4,
-   "nuvens_pct": 88.0,
+   "chuva_mm": 0.6,
+   "nuvens_pct": 84.0,
    "temp_c": 20.5
   },
   {
    "hora": "01:00",
-   "chuva_mm": 0.4,
-   "nuvens_pct": 88.0,
+   "chuva_mm": 0.6,
+   "nuvens_pct": 82.0,
    "temp_c": 20.3
   },
   {
    "hora": "02:00",
-   "chuva_mm": 0.4,
-   "nuvens_pct": 89.0,
+   "chuva_mm": 0.6,
+   "nuvens_pct": 80.0,
    "temp_c": 20.2
   },
   {
    "hora": "03:00",
-   "chuva_mm": 0.4,
-   "nuvens_pct": 89.0,
+   "chuva_mm": 0.6,
+   "nuvens_pct": 78.0,
    "temp_c": 20.3
   },
   {
    "hora": "04:00",
-   "chuva_mm": 0.1,
-   "nuvens_pct": 90.0,
-   "temp_c": 20.6
+   "chuva_mm": 0.0,
+   "nuvens_pct": 77.0,
+   "temp_c": 20.7
   },
   {
    "hora": "05:00",
-   "chuva_mm": 0.1,
-   "nuvens_pct": 93.0,
+   "chuva_mm": 0.0,
+   "nuvens_pct": 76.0,
    "temp_c": 21.3
   },
   {
    "hora": "06:00",
-   "chuva_mm": 0.1,
-   "nuvens_pct": 96.0,
+   "chuva_mm": 0.0,
+   "nuvens_pct": 76.0,
    "temp_c": 22.0
   },
   {
    "hora": "07:00",
-   "chuva_mm": 0.1,
-   "nuvens_pct": 97.0,
-   "temp_c": 22.8
+   "chuva_mm": 0.0,
+   "nuvens_pct": 75.0,
+   "temp_c": 22.9
   },
   {
    "hora": "08:00",
-   "chuva_mm": 0.1,
-   "nuvens_pct": 97.0,
-   "temp_c": 23.5
+   "chuva_mm": 0.0,
+   "nuvens_pct": 74.0,
+   "temp_c": 23.7
   },
   {
    "hora": "09:00",
-   "chuva_mm": 0.1,
-   "nuvens_pct": 94.0,
-   "temp_c": 24.1
-  },
-  {
-   "hora": "10:00",
-   "chuva_mm": 0.8,
-   "nuvens_pct": 86.0,
-   "temp_c": 24.6
-  },
-  {
-   "hora": "11:00",
-   "chuva_mm": 0.8,
-   "nuvens_pct": 74.0,
-   "temp_c": 25.1
-  },
-  {
-   "hora": "12:00",
-   "chuva_mm": 0.8,
-   "nuvens_pct": 60.0,
-   "temp_c": 25.5
-  },
-  {
-   "hora": "13:00",
-   "chuva_mm": 0.8,
-   "nuvens_pct": 46.0,
-   "temp_c": 25.8
-  },
-  {
-   "hora": "14:00",
-   "chuva_mm": 0.8,
-   "nuvens_pct": 35.0,
-   "temp_c": 25.9
-  },
-  {
-   "hora": "15:00",
-   "chuva_mm": 0.8,
-   "nuvens_pct": 29.0,
-   "temp_c": 25.9
-  },
-  {
-   "hora": "16:00",
-   "chuva_mm": 0.2,
-   "nuvens_pct": 29.0,
-   "temp_c": 25.7
-  },
-  {
-   "hora": "17:00",
-   "chuva_mm": 0.2,
-   "nuvens_pct": 33.0,
-   "temp_c": 25.2
-  },
-  {
-   "hora": "18:00",
-   "chuva_mm": 0.2,
-   "nuvens_pct": 41.0,
+   "chuva_mm": 0.0,
+   "nuvens_pct": 71.0,
    "temp_c": 24.5
   },
   {
+   "hora": "10:00",
+   "chuva_mm": 0.0,
+   "nuvens_pct": 66.0,
+   "temp_c": 25.3
+  },
+  {
+   "hora": "11:00",
+   "chuva_mm": 0.0,
+   "nuvens_pct": 59.0,
+   "temp_c": 26.2
+  },
+  {
+   "hora": "12:00",
+   "chuva_mm": 0.0,
+   "nuvens_pct": 51.0,
+   "temp_c": 27.1
+  },
+  {
+   "hora": "13:00",
+   "chuva_mm": 0.0,
+   "nuvens_pct": 43.0,
+   "temp_c": 27.8
+  },
+  {
+   "hora": "14:00",
+   "chuva_mm": 0.0,
+   "nuvens_pct": 37.0,
+   "temp_c": 28.3
+  },
+  {
+   "hora": "15:00",
+   "chuva_mm": 0.0,
+   "nuvens_pct": 33.0,
+   "temp_c": 28.4
+  },
+  {
+   "hora": "16:00",
+   "chuva_mm": 0.3,
+   "nuvens_pct": 32.0,
+   "temp_c": 27.9
+  },
+  {
+   "hora": "17:00",
+   "chuva_mm": 0.3,
+   "nuvens_pct": 33.0,
+   "temp_c": 26.9
+  },
+  {
+   "hora": "18:00",
+   "chuva_mm": 0.3,
+   "nuvens_pct": 35.0,
+   "temp_c": 25.7
+  },
+  {
    "hora": "19:00",
-   "chuva_mm": 0.2,
-   "nuvens_pct": 49.0,
-   "temp_c": 23.8
+   "chuva_mm": 0.3,
+   "nuvens_pct": 38.0,
+   "temp_c": 24.4
   },
   {
    "hora": "20:00",
-   "chuva_mm": 0.2,
-   "nuvens_pct": 57.0,
+   "chuva_mm": 0.3,
+   "nuvens_pct": 41.0,
    "temp_c": 23.2
   },
   {
    "hora": "21:00",
-   "chuva_mm": 0.2,
-   "nuvens_pct": 64.0,
-   "temp_c": 22.7
+   "chuva_mm": 0.3,
+   "nuvens_pct": 45.0,
+   "temp_c": 22.4
   },
   {
    "hora": "22:00",
    "chuva_mm": 0.1,
-   "nuvens_pct": 71.0,
-   "temp_c": 22.2
+   "nuvens_pct": 50.0,
+   "temp_c": 21.9
   },
   {
    "hora": "23:00",
    "chuva_mm": 0.1,
-   "nuvens_pct": 79.0,
-   "temp_c": 21.8
+   "nuvens_pct": 57.0,
+   "temp_c": 21.6
   }
  ],
  "ultimos_dias": [
@@ -249,7 +249,7 @@
   },
   {
    "data": "2026-10-29",
-   "chuva_est_mm": 86.9,
+   "chuva_est_mm": 87.9,
    "temp_max_c": 25.4,
    "umid_media_pct": 97.0
   }
