@@ -4,106 +4,170 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Chuva Amanhã — Uberaba</title>
-<meta name="description" content="Probabilidade de chuva para amanhã em Uberaba-MG — Random Forest sobre a previsão do modelo JMA GSM.">
+<meta name="description" content="Probabilidade de chuva para amanhã em Uberaba-MG — Random Forest com medições do INMET e previsão do modelo JMA GSM.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
 :root {
   color-scheme: light;
-  --bg: #f4f3f0;
-  --surface-1: #fcfcfb;
-  --surface-2: #f0efec;
-  --border: #e2e0da;
-  --grid: #e8e6e1;
-  --text-primary: #0b0b0b;
-  --text-secondary: #52514e;
-  --text-muted: #7a7974;
+  --bg: #f3f5f8;
+  --surface-1: #ffffff;
+  --surface-2: #eef2f7;
+  --border: #dde3eb;
+  --grid: #e6eaf0;
+  --text-primary: #0d1724;
+  --text-secondary: #4b5565;
+  --text-muted: #758092;
   --series-1: #2a78d6;
   --series-2: #eb6834;
-  --accent-soft: #cde2fb;
   --estimado: #9ec5f4;
-  --good: #0ca30c;
+  --accent: #1c5cab;
+  --accent-soft: #e3eefb;
   --critical: #d03b3b;
-  --warning: #fab219;
-  --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04);
+  --hero-1: #0a2a57;
+  --hero-2: #12488f;
+  --hero-3: #2a74c9;
+  --seq-0: #e3eefb;
+  --seq-1: #1c5cab;
+  --shadow: 0 1px 2px rgba(13,23,36,.05), 0 8px 24px rgba(13,23,36,.06);
+  --shadow-lg: 0 2px 4px rgba(13,23,36,.06), 0 18px 40px rgba(10,42,87,.14);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --bg: #121211;
-    --surface-1: #1a1a19;
-    --surface-2: #232321;
-    --border: #2f2f2c;
-    --grid: #2a2a27;
-    --text-primary: #f0efec;
-    --text-secondary: #c3c2b7;
-    --text-muted: #8f8e86;
+    --bg: #0d1117;
+    --surface-1: #161b22;
+    --surface-2: #1e252e;
+    --border: #2a323d;
+    --grid: #252c36;
+    --text-primary: #eef2f6;
+    --text-secondary: #b9c2ce;
+    --text-muted: #8590a0;
     --series-1: #3987e5;
     --series-2: #d95926;
-    --accent-soft: #184f95;
     --estimado: #2a4d7a;
+    --accent: #6da7ec;
+    --accent-soft: #17304f;
+    --hero-1: #06152e;
+    --hero-2: #0b2f5e;
+    --hero-3: #164f96;
+    --seq-0: #1e2a3a;
+    --seq-1: #3987e5;
     --shadow: none;
+    --shadow-lg: 0 18px 40px rgba(0,0,0,.35);
   }
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #121211;
-  --surface-1: #1a1a19;
-  --surface-2: #232321;
-  --border: #2f2f2c;
-  --grid: #2a2a27;
-  --text-primary: #f0efec;
-  --text-secondary: #c3c2b7;
-  --text-muted: #8f8e86;
+  --bg: #0d1117;
+  --surface-1: #161b22;
+  --surface-2: #1e252e;
+  --border: #2a323d;
+  --grid: #252c36;
+  --text-primary: #eef2f6;
+  --text-secondary: #b9c2ce;
+  --text-muted: #8590a0;
   --series-1: #3987e5;
   --series-2: #d95926;
-  --accent-soft: #184f95;
   --estimado: #2a4d7a;
+  --accent: #6da7ec;
+  --accent-soft: #17304f;
+  --hero-1: #06152e;
+  --hero-2: #0b2f5e;
+  --hero-3: #164f96;
+  --seq-0: #1e2a3a;
+  --seq-1: #3987e5;
   --shadow: none;
+  --shadow-lg: 0 18px 40px rgba(0,0,0,.35);
 }
 * { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 body {
   margin: 0; background: var(--bg); color: var(--text-primary);
-  font: 15px/1.5 Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 15px/1.55 Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
-.wrap { max-width: 1080px; margin: 0 auto; padding: 32px 16px 48px; }
-header.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
-.eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
-h1 { font-size: 26px; line-height: 1.2; margin: 4px 0 0; font-weight: 700; letter-spacing: -.01em; }
-h2 { font-size: 15px; margin: 0 0 2px; font-weight: 600; }
-.sub { color: var(--text-secondary); font-size: 13px; margin: 0 0 14px; }
-.theme-btn {
-  border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary);
-  border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 13px; cursor: pointer; white-space: nowrap;
+a { color: inherit; }
+
+/* ---------- faixa azul (hero) ---------- */
+.hero {
+  position: relative; overflow: hidden; color: #fff;
+  background:
+    radial-gradient(1200px 400px at 85% -10%, rgba(255,255,255,.14), transparent 60%),
+    linear-gradient(118deg, var(--hero-1) 0%, var(--hero-2) 52%, var(--hero-3) 100%);
+  padding: 34px 16px 150px;
 }
-.card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; padding: 20px; box-shadow: var(--shadow); }
+.hero::after {               /* brilho sutil na borda inferior */
+  content: ""; position: absolute; inset: auto 0 0 0; height: 1px; background: rgba(255,255,255,.12);
+}
+.hero-inner { position: relative; max-width: 1120px; margin: 0 auto; }
+.hero-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.eyebrow { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); font-weight: 600; }
+.hero h1 { font-size: 40px; line-height: 1.12; margin: 18px 0 12px; font-weight: 800; letter-spacing: -.02em; max-width: 640px; }
+.lead { font-size: 16px; line-height: 1.6; color: rgba(255,255,255,.86); max-width: 600px; margin: 0 0 22px; }
+.btns { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 600; font-size: 14px;
+  padding: 10px 18px; border-radius: 999px; transition: transform .15s ease, background .15s ease;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn-solid { background: #fff; color: var(--hero-2); }
+.btn-ghost { color: #fff; border: 1px solid rgba(255,255,255,.45); }
+.btn-ghost:hover { background: rgba(255,255,255,.1); }
+.btn svg { width: 16px; height: 16px; }
+.theme-btn {
+  border: 1px solid rgba(255,255,255,.35); background: rgba(255,255,255,.08); color: #fff;
+  border-radius: 999px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer; white-space: nowrap;
+}
+.theme-btn:hover { background: rgba(255,255,255,.16); }
+.hero-art { position: absolute; right: -10px; top: 38px; width: 430px; height: auto; pointer-events: none; }
+@media (max-width: 900px) { .hero-art { width: 300px; right: -60px; top: 70px; opacity: .45; } }
+@media (max-width: 760px) { .hero h1 { font-size: 30px; } .hero { padding-bottom: 130px; } .hero-art { display: none; } }
+
+/* ---------- layout ---------- */
+.wrap { position: relative; max-width: 1120px; margin: -112px auto 0; padding: 0 16px 48px; }
+.card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; padding: 22px; box-shadow: var(--shadow); }
+.card.lift { box-shadow: var(--shadow-lg); border-color: transparent; }
 .grid { display: grid; gap: 16px; }
+.grid > * { min-width: 0; }
 .g-hero { grid-template-columns: 1.1fr 1fr; }
 .g-2 { grid-template-columns: 1fr 1fr; }
-@media (max-width: 760px) { .g-hero, .g-2 { grid-template-columns: 1fr; } h1 { font-size: 22px; } }
+.g-5 { grid-template-columns: repeat(5, 1fr); }
+@media (max-width: 980px) { .g-5 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 760px) { .g-hero, .g-2, .g-5 { grid-template-columns: 1fr; } }
 section { margin-top: 16px; }
+h2 { font-size: 16px; margin: 0 0 2px; font-weight: 650; }
+.sub { color: var(--text-secondary); font-size: 13px; margin: 0 0 14px; }
+.sec-title { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 750; letter-spacing: -.01em; margin: 44px 0 6px; }
+.sec-title::before { content: ""; width: 4px; height: 24px; border-radius: 2px; background: linear-gradient(var(--hero-3), var(--hero-2)); }
+.sec-lead { color: var(--text-secondary); margin: 0 0 16px; max-width: 760px; }
 
-/* hero */
+/* ---------- cartão principal ---------- */
+.fc-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .hero-date { color: var(--text-secondary); font-size: 14px; }
-.hero-num { font-size: 84px; line-height: 1; font-weight: 700; letter-spacing: -.03em; margin: 10px 0 4px; font-variant-numeric: tabular-nums; }
-.hero-num small { font-size: 36px; font-weight: 600; color: var(--text-secondary); margin-left: 2px; }
-.hero-cat { font-size: 20px; font-weight: 600; }
-.hero-hint { color: var(--text-secondary); font-size: 13px; margin-top: 6px; }
-.meter { position: relative; height: 10px; border-radius: 6px; background: var(--surface-2); margin: 22px 0 6px; overflow: visible; }
-.meter-fill { position: absolute; inset: 0 auto 0 0; border-radius: 6px; background: var(--series-1); transition: width .6s ease; }
-.meter-tick { position: absolute; top: -5px; bottom: -5px; width: 2px; background: var(--text-primary); border-radius: 1px; }
+.hero-num { font-size: 88px; line-height: 1; font-weight: 800; letter-spacing: -.04em; margin: 12px 0 6px; font-variant-numeric: tabular-nums; }
+.hero-num small { font-size: 36px; font-weight: 600; color: var(--text-secondary); margin-left: 2px; letter-spacing: 0; }
+.hero-cat { font-size: 21px; font-weight: 700; }
+.hero-hint { color: var(--text-secondary); font-size: 13px; margin-top: 4px; }
+.wx { width: 116px; text-align: center; flex: none; }
+.wx svg { width: 116px; height: 116px; display: block; filter: drop-shadow(0 6px 12px rgba(10,42,87,.15)); }
+.wx-txt { font-size: 12px; font-weight: 600; color: var(--accent); margin-top: -4px; }
+.meter { position: relative; height: 12px; border-radius: 6px; background: var(--surface-2); margin: 24px 0 6px; }
+.meter-fill { position: absolute; inset: 0 auto 0 0; border-radius: 6px; background: linear-gradient(90deg, #6da7ec, var(--series-1)); transition: width .6s ease; }
+.meter-tick { position: absolute; top: -6px; bottom: -6px; width: 2px; background: var(--text-primary); border-radius: 1px; }
 .meter-scale { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
-.meter-legend { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+.meter-legend { font-size: 12px; color: var(--text-secondary); margin-top: 8px; }
 
 .kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.kpi { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; }
+.kpi { background: var(--surface-2); border-radius: 12px; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; }
+.kpi .ic { width: 28px; height: 28px; border-radius: 8px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; flex: none; margin-top: 2px; }
+.kpi .ic svg { width: 16px; height: 16px; }
 .kpi .lab { font-size: 12px; color: var(--text-secondary); }
-.kpi .val { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 2px; }
+.kpi .val { font-size: 22px; font-weight: 650; font-variant-numeric: tabular-nums; margin-top: 1px; }
 .kpi .val span { font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-left: 2px; }
 
-/* charts */
+/* ---------- gráficos ---------- */
 .chart { position: relative; width: 100%; }
 .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
 .axis text { fill: var(--text-muted); font-size: 11px; font-family: Inter, sans-serif; font-variant-numeric: tabular-nums; }
@@ -111,55 +175,189 @@ section { margin-top: 16px; }
 .baseline { stroke: var(--text-muted); stroke-width: 1; }
 .tip {
   position: absolute; pointer-events: none; background: var(--surface-1); color: var(--text-primary);
-  border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; font-size: 12px; line-height: 1.4;
-  box-shadow: 0 4px 16px rgba(0,0,0,.12); white-space: nowrap; opacity: 0; transition: opacity .1s; z-index: 5;
+  border: 1px solid var(--border); border-radius: 10px; padding: 8px 11px; font-size: 12px; line-height: 1.45;
+  box-shadow: 0 6px 20px rgba(0,0,0,.14); white-space: nowrap; opacity: 0; transition: opacity .1s; z-index: 5;
 }
-.tip b { font-weight: 600; }
+.tip b { font-weight: 650; }
 .tip .k { color: var(--text-secondary); }
 .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--text-secondary); margin: 0 0 8px; }
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
 .legend i.dot { border-radius: 50%; }
 .legend i.line { height: 2px; border-radius: 1px; vertical-align: 3px; width: 14px; }
 
-/* tables */
+/* ---------- tabela ---------- */
 table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
-th, td { text-align: right; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+th, td { text-align: right; padding: 9px 10px; border-bottom: 1px solid var(--border); }
 th:first-child, td:first-child { text-align: left; }
 th { font-weight: 600; color: var(--text-secondary); font-size: 12px; }
-tr.destaque td { font-weight: 600; }
-tr.destaque td:first-child::before { content: "● "; color: var(--series-1); }
+tr.destaque td { font-weight: 650; background: var(--accent-soft); }
+tr.destaque td:first-child { border-radius: 8px 0 0 8px; }
+tr.destaque td:last-child { border-radius: 0 8px 8px 0; }
 .table-scroll { overflow-x: auto; }
 
-.status { display: none; align-items: center; gap: 8px; border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px;
-  border: 1px solid var(--border); background: var(--surface-1); }
+/* ---------- seção do modelo ---------- */
+.step { position: relative; }
+.step .num {
+  width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; color: #fff;
+  background: linear-gradient(135deg, var(--hero-3), var(--hero-2)); margin-bottom: 12px;
+}
+.step .num svg { width: 18px; height: 18px; }
+.step h3 { font-size: 14px; margin: 0 0 4px; font-weight: 700; }
+.step p { font-size: 13px; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+.step .tag { display: inline-block; font-size: 11px; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 2px 8px; margin-bottom: 8px; }
+.diagram { overflow-x: auto; }
+.diagram svg { display: block; width: 100%; height: auto; }
+@media (max-width: 600px) { .diagram svg { min-width: 520px; } }
+.d-box { fill: var(--surface-2); stroke: var(--border); }
+.d-box-acc { fill: var(--accent-soft); stroke: var(--series-1); }
+.d-text { fill: var(--text-primary); font: 600 13px Inter, sans-serif; }
+.d-text-2 { fill: var(--text-secondary); font: 500 12px Inter, sans-serif; }
+.d-text-acc { fill: var(--accent); font: 700 13px Inter, sans-serif; }
+.d-line { stroke: var(--text-muted); stroke-width: 1.5; fill: none; }
+.d-node { fill: var(--surface-1); stroke: var(--series-1); stroke-width: 2; }
+.d-edge { stroke: var(--border); stroke-width: 2; fill: none; }
+.d-edge-lab { fill: var(--text-muted); font: 600 11px Inter, sans-serif; }
+.caption { font-size: 12px; color: var(--text-muted); margin: 10px 0 0; }
+
+.status { display: none; align-items: center; gap: 8px; border-radius: 12px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px;
+  border: 1px solid var(--border); background: var(--surface-1); box-shadow: var(--shadow-lg); }
 .status.show { display: flex; }
 .status .ico { font-weight: 700; color: var(--critical); }
-.note { color: var(--text-secondary); font-size: 13px; }
-.note p { margin: 0 0 8px; }
-footer { margin-top: 28px; color: var(--text-muted); font-size: 12px; }
-footer a, .note a { color: var(--text-secondary); }
-.mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; }
+.note { color: var(--text-secondary); font-size: 14px; }
+.note p { margin: 0 0 10px; }
+.mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; color: var(--text-muted); }
 .empty { color: var(--text-muted); font-size: 13px; padding: 24px 0; text-align: center; }
+footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 12px; }
+footer a { color: var(--text-secondary); }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header class="top">
-    <div>
-      <div class="eyebrow">Uberaba-MG · Previsão estatística</div>
-      <h1>Vai chover amanhã?</h1>
-    </div>
-    <button class="theme-btn" id="themeBtn" type="button" aria-label="Alternar tema claro/escuro">◐ Tema</button>
-  </header>
 
+<!-- Biblioteca de ícones do tempo (desenhados à mão em SVG) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="g-sol" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe082"/><stop offset="1" stop-color="#f6a723"/></linearGradient>
+    <linearGradient id="g-nuvem" gradientUnits="userSpaceOnUse" x1="0" y1="18" x2="0" y2="52"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d5e3f4"/></linearGradient>
+    <linearGradient id="g-nuvem-chuva" gradientUnits="userSpaceOnUse" x1="0" y1="14" x2="0" y2="46"><stop offset="0" stop-color="#eef4fb"/><stop offset="1" stop-color="#b3c7df"/></linearGradient>
+    <linearGradient id="g-nuvem-temporal" gradientUnits="userSpaceOnUse" x1="0" y1="12" x2="0" y2="44"><stop offset="0" stop-color="#9aabc2"/><stop offset="1" stop-color="#55667f"/></linearGradient>
+    <linearGradient id="g-gota" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7cb6f5"/><stop offset="1" stop-color="#2a78d6"/></linearGradient>
+    <linearGradient id="g-raio" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe066"/><stop offset="1" stop-color="#f5a524"/></linearGradient>
+  </defs>
+  <symbol id="i-sol" viewBox="0 0 64 64">
+    <g stroke="#f6b02d" stroke-width="3.6" stroke-linecap="round">
+      <line x1="32" y1="5" x2="32" y2="11"/><line x1="32" y1="53" x2="32" y2="59"/>
+      <line x1="5" y1="32" x2="11" y2="32"/><line x1="53" y1="32" x2="59" y2="32"/>
+      <line x1="12.9" y1="12.9" x2="17.2" y2="17.2"/><line x1="46.8" y1="46.8" x2="51.1" y2="51.1"/>
+      <line x1="12.9" y1="51.1" x2="17.2" y2="46.8"/><line x1="46.8" y1="17.2" x2="51.1" y2="12.9"/>
+    </g>
+    <circle cx="32" cy="32" r="14.5" fill="url(#g-sol)"/>
+    <circle cx="27" cy="27" r="5" fill="#fff" opacity=".35"/>
+  </symbol>
+  <symbol id="i-parcial" viewBox="0 0 64 64">
+    <g stroke="#f6b02d" stroke-width="3" stroke-linecap="round">
+      <line x1="24" y1="4" x2="24" y2="8.5"/><line x1="6" y1="22" x2="10.5" y2="22"/>
+      <line x1="11.3" y1="9.3" x2="14.5" y2="12.5"/><line x1="36.7" y1="9.3" x2="33.5" y2="12.5"/><line x1="11.3" y1="34.7" x2="14.5" y2="31.5"/>
+    </g>
+    <circle cx="24" cy="22" r="10" fill="url(#g-sol)"/>
+    <g fill="url(#g-nuvem)" stroke="#b7c8dc" stroke-width="1">
+      <path d="M19 52h29a10 10 0 0 0 1.2-19.9A13 13 0 0 0 24.4 33 9.6 9.6 0 0 0 19 52z"/>
+    </g>
+    <path d="M27 36.5a8 8 0 0 1 8.5-4.8" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none" opacity=".9"/>
+  </symbol>
+  <symbol id="i-chuva" viewBox="0 0 64 64">
+    <path d="M17 44h31a11 11 0 0 0 1.3-21.9A15 15 0 0 0 21.3 24 10 10 0 0 0 17 44z" fill="url(#g-nuvem-chuva)" stroke="#9fb4cf" stroke-width="1"/>
+    <path d="M24 27.5a9.5 9.5 0 0 1 10-6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none" opacity=".9"/>
+    <g fill="url(#g-gota)">
+      <path d="M22 49c0 2.2-1.6 4-3.5 4S15 51.2 15 49c0-2 3.5-6.5 3.5-6.5S22 47 22 49z" transform="rotate(12 18.5 49)"/>
+      <path d="M35 51c0 2.2-1.6 4-3.5 4S28 53.2 28 51c0-2 3.5-6.5 3.5-6.5S35 49 35 51z" transform="rotate(12 31.5 51)"/>
+      <path d="M48 49c0 2.2-1.6 4-3.5 4S41 51.2 41 49c0-2 3.5-6.5 3.5-6.5S48 47 48 49z" transform="rotate(12 44.5 49)"/>
+    </g>
+  </symbol>
+  <symbol id="i-temporal" viewBox="0 0 64 64">
+    <path d="M16 41h32a11 11 0 0 0 1.3-21.9A15 15 0 0 0 20.3 21 10 10 0 0 0 16 41z" fill="url(#g-nuvem-temporal)"/>
+    <path d="M23 24.5a9.5 9.5 0 0 1 10-6" stroke="#c8d4e4" stroke-width="2.2" stroke-linecap="round" fill="none" opacity=".8"/>
+    <path d="M34 38l-8 12h7l-3 11 11-15h-7l4-8z" fill="url(#g-raio)" stroke="#e7951b" stroke-width="1" stroke-linejoin="round"/>
+    <g fill="url(#g-gota)">
+      <path d="M21 50c0 2-1.4 3.6-3.2 3.6S14.6 52 14.6 50c0-1.8 3.2-6 3.2-6S21 48.2 21 50z" transform="rotate(12 17.8 50)"/>
+      <path d="M51 50c0 2-1.4 3.6-3.2 3.6S44.6 52 44.6 50c0-1.8 3.2-6 3.2-6S51 48.2 51 50z" transform="rotate(12 47.8 50)"/>
+    </g>
+  </symbol>
+</svg>
+
+<header class="hero">
+  <div class="hero-inner">
+    <!-- Ilustração estática: céu com nuvens em camadas -->
+    <svg class="hero-art" viewBox="0 0 430 300" aria-hidden="true">
+      <defs>
+        <radialGradient id="h-sol" cx=".5" cy=".5" r=".5">
+          <stop offset="0" stop-color="#ffe9a8" stop-opacity=".95"/><stop offset=".45" stop-color="#ffd166" stop-opacity=".55"/><stop offset="1" stop-color="#ffd166" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="h-nuvem" gradientUnits="userSpaceOnUse" x1="0" y1="70" x2="0" y2="230">
+          <stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#eef4fc"/><stop offset="1" stop-color="#c9dbf2"/>
+        </linearGradient>
+        <linearGradient id="h-nuvem-2" gradientUnits="userSpaceOnUse" x1="0" y1="40" x2="0" y2="150">
+          <stop offset="0" stop-color="#ffffff" stop-opacity=".75"/><stop offset="1" stop-color="#bcd3f0" stop-opacity=".55"/>
+        </linearGradient>
+        <filter id="h-sombra" x="-20%" y="-20%" width="140%" height="160%">
+          <feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#061a3a" flood-opacity=".35"/>
+        </filter>
+        <linearGradient id="h-pingo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0"/><stop offset="1" stop-color="#cfe3fb" stop-opacity=".9"/></linearGradient>
+      </defs>
+      <circle cx="300" cy="78" r="80" fill="url(#h-sol)"/>
+      <circle cx="300" cy="78" r="30" fill="#ffd36b"/>
+      <circle cx="291" cy="69" r="9" fill="#fff" opacity=".35"/>
+      <!-- nuvem de fundo -->
+      <g fill="url(#h-nuvem-2)">
+        <circle cx="120" cy="92" r="30"/><circle cx="155" cy="75" r="38"/><circle cx="196" cy="90" r="28"/>
+        <rect x="90" y="88" width="134" height="32" rx="16"/>
+      </g>
+      <!-- nuvem principal -->
+      <g filter="url(#h-sombra)">
+        <g fill="url(#h-nuvem)">
+          <circle cx="170" cy="176" r="44"/><circle cx="232" cy="144" r="64"/><circle cx="300" cy="170" r="50"/>
+          <circle cx="352" cy="190" r="34"/><rect x="128" y="168" width="258" height="58" rx="29"/>
+        </g>
+      </g>
+      <path d="M190 150a46 46 0 0 1 38-38" stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none" opacity=".9"/>
+      <path d="M268 140a30 30 0 0 1 20-14" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none" opacity=".7"/>
+      <!-- pingos -->
+      <g stroke="url(#h-pingo)" stroke-width="4" stroke-linecap="round">
+        <line x1="188" y1="244" x2="182" y2="264"/><line x1="226" y1="250" x2="220" y2="274"/>
+        <line x1="264" y1="244" x2="258" y2="264"/><line x1="302" y1="252" x2="296" y2="276"/><line x1="340" y1="244" x2="334" y2="262"/>
+      </g>
+      <!-- nuvenzinha -->
+      <g fill="#ffffff" opacity=".55"><circle cx="70" cy="214" r="14"/><circle cx="88" cy="205" r="18"/><circle cx="106" cy="215" r="12"/><rect x="58" y="212" width="58" height="16" rx="8"/></g>
+    </svg>
+
+    <div class="hero-top">
+      <div class="eyebrow">Portfólio · Ciência de dados · Dr. Thiago Damasceno Silva</div>
+      <button class="theme-btn" id="themeBtn" type="button" aria-label="Alternar tema claro/escuro">◐ Tema</button>
+    </div>
+    <h1>Vai chover amanhã em Uberaba?</h1>
+    <p class="lead">Probabilidade de chover pelo menos 1 mm no dia seguinte, recalculada todas as noites. Um <b>Random Forest</b> combina as medições da estação do <b>INMET</b> com a previsão do modelo global japonês <b>JMA</b> e corrige os vieses locais da previsão numérica.</p>
+    <div class="btns">
+      <a class="btn btn-solid" href="#modelo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6M12 9l-4 4M12 9l4 4M8 13l-3 4M8 13l2 4M16 13l-2 4M16 13l3 4"/></svg>
+        Como o modelo funciona</a>
+      <a class="btn btn-ghost" href="https://www.linkedin.com/in/thiago-damasceno-411270203/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
   <div class="status" id="status" role="status"><span class="ico">!</span><span id="statusTxt"></span></div>
 
   <div class="grid g-hero">
-    <div class="card" aria-live="polite">
-      <div class="hero-date" id="heroDate">Carregando…</div>
-      <div class="hero-num" id="heroNum">—</div>
-      <div class="hero-cat" id="heroCat"></div>
-      <div class="hero-hint">chance de chover pelo menos 1 mm</div>
+    <div class="card lift" aria-live="polite">
+      <div class="fc-top">
+        <div>
+          <div class="hero-date" id="heroDate">Carregando…</div>
+          <div class="hero-num" id="heroNum">—</div>
+          <div class="hero-cat" id="heroCat"></div>
+          <div class="hero-hint">chance de chover pelo menos 1 mm</div>
+        </div>
+        <div class="wx" id="wx"></div>
+      </div>
       <div class="meter" role="img" id="meter" aria-label="Probabilidade de chuva">
         <div class="meter-fill" id="meterFill" style="width:0"></div>
         <div class="meter-tick" id="meterTick" style="left:0"></div>
@@ -167,14 +365,15 @@ footer a, .note a { color: var(--text-secondary); }
       <div class="meter-scale"><span>0%</span><span>50%</span><span>100%</span></div>
       <div class="meter-legend" id="meterLegend"></div>
     </div>
-    <div class="card">
+    <div class="card lift">
       <h2>Previsão do modelo JMA para amanhã</h2>
-      <p class="sub">Rodada mais recente do modelo global — uma das entradas do Random Forest</p>
+      <p class="sub">Rodada mais recente do modelo global e condições medidas pelo INMET</p>
       <div class="kpis" id="kpisAmanha"></div>
     </div>
   </div>
 
-  <section class="grid g-2">
+  <div class="sec-title">Amanhã e os últimos dias</div>
+  <section class="grid g-2" style="margin-top:12px">
     <div class="card">
       <h2>Chuva prevista hora a hora</h2>
       <p class="sub" id="subHorario">Amanhã · modelo JMA GSM · horário de Brasília</p>
@@ -183,7 +382,7 @@ footer a, .note a { color: var(--text-secondary); }
     <div class="card">
       <h2>Últimos 14 dias</h2>
       <p class="sub">Chuva diária medida na estação INMET A568 (Uberaba)</p>
-      <div class="legend" id="legRecentes">
+      <div class="legend">
         <span><i style="background:var(--series-1)"></i>Medida (INMET)</span>
         <span id="legJma" hidden><i style="background:var(--estimado)"></i>Estimada pelo JMA (sem medição)</span>
       </div>
@@ -201,7 +400,135 @@ footer a, .note a { color: var(--text-secondary); }
     <div class="chart" id="chHistorico"></div>
   </section>
 
-  <section class="card">
+  <!-- ===================== COMO O MODELO FOI DESENVOLVIDO ===================== -->
+  <div class="sec-title" id="modelo">Como o modelo foi desenvolvido</div>
+  <p class="sec-lead">Um <b>Random Forest</b> é um conjunto de muitas árvores de decisão. Cada árvore aprende regras simples do tipo “se a previsão do JMA passa de X mm e o ar está úmido, então…”, mas a partir de uma amostra diferente dos dias e de um subconjunto diferente das variáveis. Sozinha, cada árvore erra bastante; a média dos votos de centenas delas é estável e precisa.</p>
+
+  <div class="grid g-5">
+    <div class="card step">
+      <div class="num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></div>
+      <span class="tag">1 · Dados</span>
+      <h3>9 anos de medições</h3>
+      <p>Estação automática do INMET em Uberaba (A568), dados horários de 2017 a 2026, tratados: limites físicos, lacunas curtas preenchidas e agregação por dia local.</p>
+    </div>
+    <div class="card step">
+      <div class="num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></div>
+      <span class="tag">2 · Variáveis</span>
+      <h3>70 sinais por dia</h3>
+      <p>61 do INMET (chuva, umidade, pressão, vento, radiação, acumulados e valores dos dias anteriores) e 9 da previsão do JMA para amanhã, emitida na véspera.</p>
+    </div>
+    <div class="card step">
+      <div class="num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><circle cx="6" cy="12" r="2"/><circle cx="18" cy="12" r="2"/><circle cx="3" cy="20" r="1.5"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M11 5.5 7 10.5M13 5.5l4 5M5.2 13.7 3.6 18.5M6.8 13.7l1.6 4.8M18 14v4.5"/></svg></div>
+      <span class="tag">3 · Random Forest</span>
+      <h3>400 árvores</h3>
+      <p>Cada árvore vê uma amostra sorteada dos dias e 30% das variáveis em cada divisão (profundidade máx. 10, folhas com ≥ 40 dias). Hiperparâmetros escolhidos por validação cruzada temporal.</p>
+    </div>
+    <div class="card step">
+      <div class="num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20 20 4" stroke-dasharray="2 3"/><path d="M4 20c4-1 5-4 7-7s5-6 9-9"/></svg></div>
+      <span class="tag">4 · Calibração</span>
+      <h3>Probabilidade honesta</h3>
+      <p>Uma regressão isotônica ajusta o voto médio para que “60%” signifique chover em cerca de 60% dos dias. O limiar chove/não chove foi escolhido só com dados de treino.</p>
+    </div>
+    <div class="card step">
+      <div class="num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg></div>
+      <span class="tag">5 · Validação</span>
+      <h3>Testado no futuro</h3>
+      <p>Treino de 2017 a 2023 e teste em 2024–2026 (910 dias nunca vistos). AUC 0,90 contra 0,88 do JMA puro e 0,77 da climatologia; ganho confirmado por bootstrap.</p>
+    </div>
+  </div>
+
+  <section class="grid g-2">
+    <div class="card">
+      <h2>Da floresta à probabilidade</h2>
+      <p class="sub">Cada árvore dá um voto; a média passa pela calibração</p>
+      <div class="diagram">
+        <svg viewBox="0 0 560 300" role="img" aria-label="Esquema: dados alimentam 400 árvores, cujos votos são combinados e calibrados em uma probabilidade">
+          <defs>
+            <marker id="seta" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="var(--text-muted)"/></marker>
+            <g id="mini-arvore">
+              <path class="d-edge" d="M40 14 22 40M40 14l18 26M22 40 12 64M22 40l10 24M58 40l10 24"/>
+              <circle class="d-node" cx="40" cy="14" r="7"/>
+              <circle class="d-node" cx="22" cy="40" r="6"/><circle class="d-node" cx="58" cy="40" r="6"/>
+            </g>
+          </defs>
+          <!-- entrada -->
+          <rect class="d-box" x="8" y="112" width="128" height="76" rx="12"/>
+          <text class="d-text" x="72" y="140" text-anchor="middle">Dados do dia</text>
+          <text class="d-text-2" x="72" y="158" text-anchor="middle">INMET + JMA</text>
+          <text class="d-text-2" x="72" y="174" text-anchor="middle">70 variáveis</text>
+          <path class="d-line" d="M136 150C160 150 160 60 186 60" marker-end="url(#seta)"/>
+          <path class="d-line" d="M136 150H186" marker-end="url(#seta)"/>
+          <path class="d-line" d="M136 150C160 150 160 240 186 240" marker-end="url(#seta)"/>
+          <!-- três árvores -->
+          <g transform="translate(192 22)"><use href="#mini-arvore"/>
+            <circle cx="12" cy="64" r="6" fill="#b7d3f6"/><circle cx="32" cy="64" r="6" fill="#2a78d6"/><circle cx="68" cy="64" r="6" fill="#6da7ec"/></g>
+          <text class="d-text-2" x="232" y="102" text-anchor="middle">árvore 1 → 62%</text>
+          <g transform="translate(192 112)" opacity=".95"><use href="#mini-arvore"/>
+            <circle cx="12" cy="64" r="6" fill="#86b6ef"/><circle cx="32" cy="64" r="6" fill="#cde2fb"/><circle cx="68" cy="64" r="6" fill="#3987e5"/></g>
+          <text class="d-text-2" x="232" y="192" text-anchor="middle">árvore 2 → 48%</text>
+          <text class="d-text-2" x="232" y="214" text-anchor="middle" style="font-size:16px">⋮</text>
+          <g transform="translate(192 210)"><use href="#mini-arvore"/>
+            <circle cx="12" cy="64" r="6" fill="#2a78d6"/><circle cx="32" cy="64" r="6" fill="#6da7ec"/><circle cx="68" cy="64" r="6" fill="#1c5cab"/></g>
+          <text class="d-text-2" x="232" y="294" text-anchor="middle">árvore 400 → 71%</text>
+          <!-- combinação -->
+          <path class="d-line" d="M284 60C312 60 312 150 336 150" marker-end="url(#seta)"/>
+          <path class="d-line" d="M284 150H336" marker-end="url(#seta)"/>
+          <path class="d-line" d="M284 240C312 240 312 150 336 150" marker-end="url(#seta)"/>
+          <rect class="d-box" x="340" y="122" width="92" height="56" rx="12"/>
+          <text class="d-text" x="386" y="146" text-anchor="middle">Média</text>
+          <text class="d-text-2" x="386" y="164" text-anchor="middle">dos votos</text>
+          <path class="d-line" d="M432 150H452" marker-end="url(#seta)"/>
+          <rect class="d-box-acc" x="456" y="108" width="98" height="84" rx="12"/>
+          <text class="d-text-2" x="505" y="130" text-anchor="middle">calibração</text>
+          <text class="d-text-acc" x="505" y="160" text-anchor="middle" style="font-size:24px">58%</text>
+          <text class="d-text-2" x="505" y="180" text-anchor="middle">de chuva</text>
+        </svg>
+      </div>
+      <p class="caption">Valores ilustrativos. Cores das folhas: quanto mais escuro, maior a fração de dias chuvosos naquela regra.</p>
+    </div>
+
+    <div class="card">
+      <h2>Uma árvore que resume a floresta</h2>
+      <p class="sub">Árvore substituta (<i>surrogate</i>): poucas regras que imitam as decisões do Random Forest</p>
+      <div class="diagram">
+        <svg viewBox="0 0 560 300" role="img" aria-label="Árvore de decisão resumida com quatro regras e a probabilidade de chuva em cada uma">
+          <!-- ligações -->
+          <path class="d-edge" d="M280 66C280 92 150 86 150 112"/>
+          <path class="d-edge" d="M280 66C280 92 410 86 410 112"/>
+          <path class="d-edge" d="M150 164C150 188 80 186 80 208"/>
+          <path class="d-edge" d="M150 164C150 188 216 186 216 208"/>
+          <path class="d-edge" d="M410 164C410 188 344 186 344 208"/>
+          <path class="d-edge" d="M410 164C410 188 480 186 480 208"/>
+          <text class="d-edge-lab" x="200" y="92" text-anchor="middle">não</text>
+          <text class="d-edge-lab" x="360" y="92" text-anchor="middle">sim</text>
+          <text class="d-edge-lab" x="100" y="192" text-anchor="middle">não</text>
+          <text class="d-edge-lab" x="198" y="192" text-anchor="middle">sim</text>
+          <text class="d-edge-lab" x="362" y="192" text-anchor="middle">não</text>
+          <text class="d-edge-lab" x="460" y="192" text-anchor="middle">sim</text>
+          <!-- raiz -->
+          <rect class="d-box-acc" x="150" y="12" width="260" height="54" rx="12"/>
+          <text class="d-text" x="280" y="35" text-anchor="middle">O JMA prevê ≥ 1,5 mm amanhã?</text>
+          <text class="d-text-2" x="280" y="53" text-anchor="middle">variável mais importante do modelo</text>
+          <!-- nível 2 -->
+          <rect class="d-box" x="40" y="112" width="220" height="52" rx="12"/>
+          <text class="d-text" x="150" y="134" text-anchor="middle">Nebulosidade prevista ≥ 60%?</text>
+          <text class="d-text-2" x="150" y="152" text-anchor="middle">previsão do JMA</text>
+          <rect class="d-box" x="300" y="112" width="220" height="52" rx="12"/>
+          <text class="d-text" x="410" y="134" text-anchor="middle">Ponto de orvalho hoje ≥ 17 °C?</text>
+          <text class="d-text-2" x="410" y="152" text-anchor="middle">medição do INMET</text>
+          <!-- folhas -->
+          <g id="folhas"></g>
+        </svg>
+      </div>
+      <p class="caption">Esquema didático com limiares aproximados: mostra o tipo de regra que o modelo aprende — a previsão do JMA decide o primeiro corte e a umidade medida pelo INMET refina a decisão.</p>
+    </div>
+  </section>
+
+  <!-- ===================== VALIDAÇÃO ===================== -->
+  <div class="sec-title">Validação em dados nunca vistos</div>
+  <p class="sec-lead">O modelo foi treinado até dezembro de 2023 e avaliado em 2024–2026, simulando o uso real: só com a informação que estaria disponível na véspera.</p>
+
+  <section class="card" style="margin-top:0">
     <h2>Como o modelo se saiu no teste retroativo</h2>
     <p class="sub" id="subBacktest">Últimos 120 dias do período de teste — dias que não entraram no treino</p>
     <div class="legend">
@@ -225,18 +552,17 @@ footer a, .note a { color: var(--text-secondary); }
   </section>
 
   <section class="card note">
-    <h2>Sobre o modelo</h2>
-    <p>Um <b>Random Forest</b> foi treinado com a série da estação automática do INMET em Uberaba (A568, 2017–2026) e com as previsões do modelo global japonês <b>JMA GSM</b> emitidas com 1 dia de antecedência. Ele aprende a corrigir os vieses locais da previsão numérica e devolve uma probabilidade calibrada.</p>
-    <p>Todos os dias, o dashboard coleta as <b>medições da estação do INMET</b> (chuva, temperatura, umidade, pressão, vento e radiação) e as combina com a <b>previsão do JMA para amanhã</b> — o mesmo tipo de dado usado no treino. Se a estação ficar sem dados em algum dia, o JMA cobre a lacuna e o gráfico dos últimos 14 dias indica isso.</p>
+    <h2>Atualização diária</h2>
+    <p>Todas as noites, às 23h30, uma rotina automática coleta as <b>medições da estação do INMET</b> (chuva, temperatura, umidade, pressão, vento e radiação), busca a <b>previsão do JMA para amanhã</b> e recalcula a probabilidade. Se a estação ficar sem dados em algum dia, o JMA cobre a lacuna e o gráfico dos últimos 14 dias indica isso.</p>
     <p id="infoModelo" class="mono"></p>
   </section>
 
   <footer>
     Dados meteorológicos: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (JMA GSM, CC BY 4.0) ·
-    Série histórica: <a href="https://portal.inmet.gov.br/" target="_blank" rel="noopener">INMET</a> ·
+    Medições: <a href="https://portal.inmet.gov.br/" target="_blank" rel="noopener">INMET</a>, estação A568 ·
     Projeto de Thiago Damasceno Silva. Previsão experimental — não substitui os avisos oficiais da Defesa Civil e do INMET.
   </footer>
-</div>
+</main>
 
 <script>
 (() => {
@@ -267,7 +593,18 @@ footer a, .note a { color: var(--text-secondary); }
     return e;
   };
   const getJSON = async url => { const r = await fetch(url + "?v=" + Date.now()); if (!r.ok) throw new Error(url); return r.json(); };
-  const niceMax = v => { if (!(v > 0)) return 1; const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 2, 2.5, 5, 10]) if (m * p >= v) return m * p; return 10 * p; };
+  const icone = (id, titulo) => `<svg viewBox="0 0 64 64" role="img" aria-label="${titulo}"><title>${titulo}</title><use href="#${id}"/></svg>`;
+
+  // ---------- condição do tempo a partir da previsão ----------
+  function condicao(p) {
+    const lim = p.limiar ?? 0.34, prob = p.probabilidade;
+    const mm = (p.jma_amanha || {}).chuva_mm ?? 0;
+    const pico = Math.max(0, ...(p.horario_amanha || []).map(h => h.chuva_mm || 0));
+    if (prob < lim / 2) return { id: "i-sol", txt: "Tempo firme" };
+    if (prob < lim) return { id: "i-parcial", txt: "Pouca chance de chuva" };
+    if (mm >= 15 || pico >= 5) return { id: "i-temporal", txt: "Chuva forte possível" };
+    return { id: "i-chuva", txt: "Chuva provável" };
+  }
 
   // tooltip compartilhado por gráfico
   function tooltip(container) {
@@ -337,17 +674,19 @@ footer a, .note a { color: var(--text-secondary); }
     const passo = tickCada || Math.max(1, Math.ceil(n / Math.max(2, Math.floor(iw / 90))));
     dados.forEach((d, i) => { if (i % passo === 0) el("text", { x: X(i), y: H - 8, "text-anchor": "middle" }, ax).textContent = dCurta(d.data_alvo); });
     if (n > 1) {
+      // área suave sob a linha
+      const area = dados.map((d, i) => (i ? "L" : "M") + X(i) + "," + Y(d.p)).join("") + `L${X(n - 1)},${Y(0)}L${X(0)},${Y(0)}Z`;
+      el("path", { d: area, fill: "var(--series-1)", opacity: .08 }, svg);
       el("path", { d: dados.map((d, i) => (i ? "L" : "M") + X(i) + "," + Y(d.p)).join(""), fill: "none",
         stroke: "var(--series-1)", "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
     }
     if (n <= iw / 12) dados.forEach((d, i) => el("circle", { cx: X(i), cy: Y(d.p), r: 4, fill: "var(--series-1)", stroke: "var(--surface-1)", "stroke-width": 2 }, svg));
     if (marcar) dados.forEach((d, i) => { if (marcar(d)) el("circle", { cx: X(i), cy: Y(0) - 7, r: 4, fill: "var(--series-2)", stroke: "var(--surface-1)", "stroke-width": 2 }, svg); });
-    // crosshair
     const cross = el("line", { y1: m.t, y2: m.t + ih, stroke: "var(--text-muted)", "stroke-width": 1, "stroke-dasharray": "3 3", opacity: 0 }, svg);
     const ponto = el("circle", { r: 5, fill: "var(--series-1)", stroke: "var(--surface-1)", "stroke-width": 2, opacity: 0 }, svg);
     const tip = tooltip(container);
-    const area = el("rect", { x: m.l, y: m.t, width: iw, height: ih, fill: "transparent" }, svg);
-    area.addEventListener("mousemove", ev => {
+    const hit = el("rect", { x: m.l, y: m.t, width: iw, height: ih, fill: "transparent" }, svg);
+    hit.addEventListener("mousemove", ev => {
       const r = container.getBoundingClientRect(), s = r.width / W;
       const xs = (ev.clientX - r.left) / s;
       const i = Math.max(0, Math.min(n - 1, Math.round(n === 1 ? 0 : (xs - m.l) / iw * (n - 1))));
@@ -356,7 +695,7 @@ footer a, .note a { color: var(--text-secondary); }
       ponto.setAttribute("cx", X(i)); ponto.setAttribute("cy", Y(d.p)); ponto.setAttribute("opacity", 1);
       tip.show(dica(d), X(i) * s, Y(d.p) * s);
     });
-    area.addEventListener("mouseleave", () => { cross.setAttribute("opacity", 0); ponto.setAttribute("opacity", 0); tip.hide(); });
+    hit.addEventListener("mouseleave", () => { cross.setAttribute("opacity", 0); ponto.setAttribute("opacity", 0); tip.hide(); });
   }
 
   // ---------- diagrama de confiabilidade ----------
@@ -390,8 +729,46 @@ footer a, .note a { color: var(--text-secondary); }
     });
   }
 
+  // ---------- folhas da árvore resumida (cor sequencial azul pela probabilidade) ----------
+  function desenharFolhas() {
+    const g = $("folhas"); if (!g) return;
+    const folhas = [
+      { x: 80, p: .06, txt: "tempo firme", ic: "i-sol" },
+      { x: 216, p: .27, txt: "pouca chance", ic: "i-parcial" },
+      { x: 344, p: .41, txt: "possível", ic: "i-chuva" },
+      { x: 480, p: .78, txt: "provável", ic: "i-chuva" },
+    ];
+    const css = getComputedStyle(root);
+    const mix = (a, b, t) => {
+      const h = s => s.trim().match(/\w\w/g).map(x => parseInt(x, 16));
+      const A = h(a), B = h(b);
+      return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, "0")).join("");
+    };
+    const c0 = css.getPropertyValue("--seq-0"), c1 = css.getPropertyValue("--seq-1");
+    g.innerHTML = "";
+    folhas.forEach(f => {
+      const t = Math.min(1, f.p / .8);
+      const fill = mix(c0, c1, t), escuro = t > .45;
+      el("rect", { x: f.x - 58, y: 208, width: 116, height: 84, rx: 14, fill, stroke: "var(--border)" }, g);
+      const u = el("use", { href: "#" + f.ic, x: f.x - 50, y: 214, width: 30, height: 30 }, g);
+      el("text", { x: f.x + 22, y: 236, "text-anchor": "middle", fill: escuro ? "#fff" : "var(--text-primary)", style: "font: 800 22px Inter, sans-serif" }, g).textContent = Math.round(f.p * 100) + "%";
+      el("text", { x: f.x, y: 262, "text-anchor": "middle", fill: escuro ? "#fff" : "var(--text-secondary)", style: "font: 600 12px Inter, sans-serif" }, g).textContent = "de chuva";
+      el("text", { x: f.x, y: 280, "text-anchor": "middle", fill: escuro ? "rgba(255,255,255,.88)" : "var(--text-secondary)", style: "font: 500 11px Inter, sans-serif" }, g).textContent = f.txt;
+    });
+  }
+
   // ---------- montagem ----------
-  function kpi(lab, val, un) { return `<div class="kpi"><div class="lab">${lab}</div><div class="val">${val}<span>${un || ""}</span></div></div>`; }
+  const IC = {
+    gota: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3s6 6.6 6 11a6 6 0 0 1-12 0c0-4.4 6-11 6-11z"/></svg>',
+    relogio: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    nuvem: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 19h10a4.5 4.5 0 0 0 .6-8.96A6 6 0 0 0 6.2 11 4 4 0 0 0 7 19z"/></svg>',
+    termo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10 14.5V5a2 2 0 0 1 4 0v9.5a4 4 0 1 1-4 0z"/><path d="M12 9v7"/></svg>',
+    pluvi: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 4h12l-2 16H8z"/><path d="M7.5 12h9"/></svg>',
+    sol: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  };
+  function kpi(lab, val, un, ic) {
+    return `<div class="kpi">${ic ? `<div class="ic">${IC[ic]}</div>` : ""}<div><div class="lab">${lab}</div><div class="val">${val}<span>${un || ""}</span></div></div></div>`;
+  }
 
   function renderPrevisao(p) {
     if (p.status === "erro") {
@@ -406,30 +783,30 @@ footer a, .note a { color: var(--text-secondary); }
     $("heroDate").textContent = "Amanhã · " + dLonga(p.data_alvo);
     $("heroNum").innerHTML = Math.round(p.probabilidade * 100) + "<small>%</small>";
     $("heroCat").textContent = p.categoria;
+    const c = condicao(p);
+    $("wx").innerHTML = icone(c.id, c.txt) + `<div class="wx-txt">${c.txt}</div>`;
     $("meterFill").style.width = (p.probabilidade * 100) + "%";
     $("meterTick").style.left = `calc(${p.limiar * 100}% - 1px)`;
     $("meter").setAttribute("aria-label", `Probabilidade de chuva: ${pct(p.probabilidade)}. Limiar de decisão do modelo: ${pct(p.limiar)}.`);
-    if (p.vai_chover) $("meterLegend").innerHTML = `Traço = limiar de decisão do modelo (${pct(p.limiar)}). Amanhã está acima dele: o modelo classifica o dia como <b>chuvoso</b>.`;
-    else $("meterLegend").innerHTML = `Traço = limiar de decisão do modelo (${pct(p.limiar)}). Amanhã está abaixo dele: o modelo classifica o dia como <b>seco</b>.`;
+    $("meterLegend").innerHTML = `Traço = limiar de decisão do modelo (${pct(p.limiar)}). Amanhã está ${p.vai_chover ? "acima" : "abaixo"} dele: o modelo classifica o dia como <b>${p.vai_chover ? "chuvoso" : "seco"}</b>.`;
     const j = p.jma_amanha || {}, h = p.condicoes_hoje || {};
     $("kpisAmanha").innerHTML =
-      kpi("Chuva prevista", fmt(j.chuva_mm), " mm") + kpi("Horas com chuva", fmt(j.horas_chuva, 0), " h") +
-      kpi("Nebulosidade média", fmt(j.nuvens_pct, 0), "%") + kpi("Temperatura máxima", fmt(j.temp_max_c), " °C") +
-      kpi("Chuva medida nos últimos 7 dias", fmt(h.chuva_acum_7d_mm, 0), " mm") + kpi("Dias seguidos sem chuva", fmt(h.dias_sem_chuva, 0), "");
+      kpi("Chuva prevista (JMA)", fmt(j.chuva_mm), " mm", "gota") + kpi("Horas com chuva", fmt(j.horas_chuva, 0), " h", "relogio") +
+      kpi("Nebulosidade média", fmt(j.nuvens_pct, 0), "%", "nuvem") + kpi("Temperatura máxima", fmt(j.temp_max_c), " °C", "termo") +
+      kpi("Chuva medida em 7 dias", fmt(h.chuva_acum_7d_mm, 0), " mm", "pluvi") + kpi("Dias seguidos sem chuva", fmt(h.dias_sem_chuva, 0), "", "sol");
     const hr = p.horario_amanha || [];
     barras($("chHorario"), hr, { rotulo: d => d.hora.slice(0, 2) + "h", valor: d => d.chuva_mm, tickCada: 3,
       dica: d => `<b>${d.hora}</b><br>Chuva: <b>${fmt(d.chuva_mm, 1)} mm</b><br><span class="k">Nuvens</span> ${fmt(d.nuvens_pct, 0)}% · <span class="k">Temp.</span> ${fmt(d.temp_c)} °C` });
     $("subHorario").textContent = "Amanhã (" + dCurta(p.data_alvo) + ") · modelo JMA GSM · horário de Brasília";
     const ud = p.ultimos_dias || [];
-    const valorDia = d => d.chuva_mm != null ? d.chuva_mm : d.chuva_est_mm;      // compatível com versões antigas
+    const valorDia = d => d.chuva_mm != null ? d.chuva_mm : d.chuva_est_mm;
     const medido = d => d.fonte ? d.fonte === "INMET" : false;
     $("legJma").hidden = !ud.some(d => !medido(d));
     barras($("chRecentes"), ud, { rotulo: d => dCurta(d.data).split(" ")[0], valor: valorDia, tickCada: 1,
       corDe: d => medido(d) ? "var(--series-1)" : "var(--estimado)",
       dica: d => `<b>${dCurta(d.data)}</b><br>Chuva ${medido(d) ? "medida" : "estimada (JMA)"}: <b>${fmt(valorDia(d))} mm</b><br><span class="k">Máx.</span> ${fmt(d.temp_max_c)} °C · <span class="k">Umid.</span> ${fmt(d.umid_media_pct, 0)}%` });
-    const m = p.modelo || {};
-    const ob = p.observacoes || {};
-    $("infoModelo").textContent = `Atualizado em ${p.gerado_em ? p.gerado_em.replace("T", " ") : "—"} · modelo treinado até ${m.treinado_ate || "—"} · fonte: ${m.fonte || "—"}` +
+    const m = p.modelo || {}, ob = p.observacoes || {};
+    $("infoModelo").textContent = `Atualizado em ${p.gerado_em ? p.gerado_em.replace("T", " ") : "—"} · modelo treinado até ${m.treinado_ate || "—"}` +
       (ob.ultima_medicao_utc ? ` · última medição do INMET: ${ob.ultima_medicao_utc.slice(0, 16)} UTC · dias medidos (30 d): ${ob.dias_inmet_30d}/30` : "") +
       (p.features_ausentes ? ` · ${p.features_ausentes} ${p.features_ausentes === 1 ? "variável ausente" : "variáveis ausentes"}` : "");
   }
@@ -481,6 +858,10 @@ footer a, .note a { color: var(--text-secondary); }
       if (ultimos.b) renderBacktest(ultimos.b);
     }, 150);
   });
+  // redesenha as folhas quando o tema muda (cores da escala azul)
+  new MutationObserver(desenharFolhas).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", desenharFolhas);
+  desenharFolhas();
 
   getJSON("data/previsao.json").then(p => { ultimos.p = p; renderPrevisao(p); }).catch(() => {
     $("heroDate").textContent = "Previsão ainda não disponível";
