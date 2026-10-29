@@ -1,0 +1,1 @@
+Coloque aqui modelo_chuva_amanha.joblib e mapeamento_jma_inmet.json.
