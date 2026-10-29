@@ -2,7 +2,7 @@ name: Previsão diária de chuva
 
 on:
   schedule:
-    - cron: "10 23 * * *"     # 23:10 UTC = 20:10 em Brasília
+    - cron: "30 2 * * *"      # 02:30 UTC = 23:30 em Brasília (dia de hoje quase completo no INMET)
   workflow_dispatch:           # permite rodar manualmente pela aba Actions
 
 permissions:
@@ -24,16 +24,30 @@ jobs:
           cache: pip
 
       - name: Instalar dependências
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Coletar medições do INMET
+        run: python coletar_inmet.py
 
       - name: Gerar previsão
         run: python previsao_diaria.py
+
+      - name: Guardar diagnóstico da coleta
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostico-coleta-inmet
+          path: dados/diagnostico/
+          retention-days: 7
+          if-no-files-found: ignore
 
       - name: Publicar resultado
         if: always()           # publica também o status de erro, para o dashboard avisar
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data
+          git add docs/data dados/inmet_A568_horario.csv dados/importar
           git diff --cached --quiet || git commit -m "Previsão $(TZ=America/Sao_Paulo date +%F)"
           git push
