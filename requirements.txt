@@ -1,0 +1,6 @@
+# scikit-learn precisa ser a MESMA versão usada para salvar o modelo (Colab: 1.6.1)
+scikit-learn==1.6.1
+numpy>=1.26,<2.3
+pandas>=2.1,<3
+requests>=2.31
+joblib>=1.3
