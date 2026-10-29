@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chuva Amanhã — Uberaba</title>
+<meta name="description" content="Probabilidade de chuva para amanhã em Uberaba-MG — Random Forest sobre a previsão do modelo JMA GSM.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f4f3f0;
+  --surface-1: #fcfcfb;
+  --surface-2: #f0efec;
+  --border: #e2e0da;
+  --grid: #e8e6e1;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #7a7974;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --accent-soft: #cde2fb;
+  --good: #0ca30c;
+  --critical: #d03b3b;
+  --warning: #fab219;
+  --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121211;
+    --surface-1: #1a1a19;
+    --surface-2: #232321;
+    --border: #2f2f2c;
+    --grid: #2a2a27;
+    --text-primary: #f0efec;
+    --text-secondary: #c3c2b7;
+    --text-muted: #8f8e86;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --accent-soft: #184f95;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121211;
+  --surface-1: #1a1a19;
+  --surface-2: #232321;
+  --border: #2f2f2c;
+  --grid: #2a2a27;
+  --text-primary: #f0efec;
+  --text-secondary: #c3c2b7;
+  --text-muted: #8f8e86;
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --accent-soft: #184f95;
+  --shadow: none;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text-primary);
+  font: 15px/1.5 Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1080px; margin: 0 auto; padding: 32px 16px 48px; }
+header.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+h1 { font-size: 26px; line-height: 1.2; margin: 4px 0 0; font-weight: 700; letter-spacing: -.01em; }
+h2 { font-size: 15px; margin: 0 0 2px; font-weight: 600; }
+.sub { color: var(--text-secondary); font-size: 13px; margin: 0 0 14px; }
+.theme-btn {
+  border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary);
+  border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 13px; cursor: pointer; white-space: nowrap;
+}
+.card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; padding: 20px; box-shadow: var(--shadow); }
+.grid { display: grid; gap: 16px; }
+.g-hero { grid-template-columns: 1.1fr 1fr; }
+.g-2 { grid-template-columns: 1fr 1fr; }
+@media (max-width: 760px) { .g-hero, .g-2 { grid-template-columns: 1fr; } h1 { font-size: 22px; } }
+section { margin-top: 16px; }
+
+/* hero */
+.hero-date { color: var(--text-secondary); font-size: 14px; }
+.hero-num { font-size: 84px; line-height: 1; font-weight: 700; letter-spacing: -.03em; margin: 10px 0 4px; font-variant-numeric: tabular-nums; }
+.hero-num small { font-size: 36px; font-weight: 600; color: var(--text-secondary); margin-left: 2px; }
+.hero-cat { font-size: 20px; font-weight: 600; }
+.hero-hint { color: var(--text-secondary); font-size: 13px; margin-top: 6px; }
+.meter { position: relative; height: 10px; border-radius: 6px; background: var(--surface-2); margin: 22px 0 6px; overflow: visible; }
+.meter-fill { position: absolute; inset: 0 auto 0 0; border-radius: 6px; background: var(--series-1); transition: width .6s ease; }
+.meter-tick { position: absolute; top: -5px; bottom: -5px; width: 2px; background: var(--text-primary); border-radius: 1px; }
+.meter-scale { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.meter-legend { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+
+.kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.kpi { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; }
+.kpi .lab { font-size: 12px; color: var(--text-secondary); }
+.kpi .val { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 2px; }
+.kpi .val span { font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-left: 2px; }
+
+/* charts */
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.axis text { fill: var(--text-muted); font-size: 11px; font-family: Inter, sans-serif; font-variant-numeric: tabular-nums; }
+.gridline { stroke: var(--grid); stroke-width: 1; }
+.baseline { stroke: var(--text-muted); stroke-width: 1; }
+.tip {
+  position: absolute; pointer-events: none; background: var(--surface-1); color: var(--text-primary);
+  border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; font-size: 12px; line-height: 1.4;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12); white-space: nowrap; opacity: 0; transition: opacity .1s; z-index: 5;
+}
+.tip b { font-weight: 600; }
+.tip .k { color: var(--text-secondary); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--text-secondary); margin: 0 0 8px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.legend i.dot { border-radius: 50%; }
+.legend i.line { height: 2px; border-radius: 1px; vertical-align: 3px; width: 14px; }
+
+/* tables */
+table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+th, td { text-align: right; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+th:first-child, td:first-child { text-align: left; }
+th { font-weight: 600; color: var(--text-secondary); font-size: 12px; }
+tr.destaque td { font-weight: 600; }
+tr.destaque td:first-child::before { content: "● "; color: var(--series-1); }
+.table-scroll { overflow-x: auto; }
+
+.status { display: none; align-items: center; gap: 8px; border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px;
+  border: 1px solid var(--border); background: var(--surface-1); }
+.status.show { display: flex; }
+.status .ico { font-weight: 700; color: var(--critical); }
+.note { color: var(--text-secondary); font-size: 13px; }
+.note p { margin: 0 0 8px; }
+footer { margin-top: 28px; color: var(--text-muted); font-size: 12px; }
+footer a, .note a { color: var(--text-secondary); }
+.mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; }
+.empty { color: var(--text-muted); font-size: 13px; padding: 24px 0; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Uberaba-MG · Previsão estatística</div>
+      <h1>Vai chover amanhã?</h1>
+    </div>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Alternar tema claro/escuro">◐ Tema</button>
+  </header>
+
+  <div class="status" id="status" role="status"><span class="ico">!</span><span id="statusTxt"></span></div>
+
+  <div class="grid g-hero">
+    <div class="card" aria-live="polite">
+      <div class="hero-date" id="heroDate">Carregando…</div>
+      <div class="hero-num" id="heroNum">—</div>
+      <div class="hero-cat" id="heroCat"></div>
+      <div class="hero-hint">chance de chover pelo menos 1 mm</div>
+      <div class="meter" role="img" id="meter" aria-label="Probabilidade de chuva">
+        <div class="meter-fill" id="meterFill" style="width:0"></div>
+        <div class="meter-tick" id="meterTick" style="left:0"></div>
+      </div>
+      <div class="meter-scale"><span>0%</span><span>50%</span><span>100%</span></div>
+      <div class="meter-legend" id="meterLegend"></div>
+    </div>
+    <div class="card">
+      <h2>Previsão do modelo JMA para amanhã</h2>
+      <p class="sub">Rodada mais recente do modelo global — uma das entradas do Random Forest</p>
+      <div class="kpis" id="kpisAmanha"></div>
+    </div>
+  </div>
+
+  <section class="grid g-2">
+    <div class="card">
+      <h2>Chuva prevista hora a hora</h2>
+      <p class="sub" id="subHorario">Amanhã · modelo JMA GSM · horário de Brasília</p>
+      <div class="chart" id="chHorario"></div>
+    </div>
+    <div class="card">
+      <h2>Últimos 14 dias</h2>
+      <p class="sub">Chuva estimada (JMA convertido para a escala da estação INMET)</p>
+      <div class="chart" id="chRecentes"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Previsões emitidas pelo dashboard</h2>
+    <p class="sub" id="subHist">Probabilidade calculada a cada dia para o dia seguinte</p>
+    <div class="chart" id="chHistorico"></div>
+  </section>
+
+  <section class="card">
+    <h2>Como o modelo se saiu no teste retroativo</h2>
+    <p class="sub" id="subBacktest">Últimos 120 dias do período de teste — dias que não entraram no treino</p>
+    <div class="legend">
+      <span><i class="line" style="background:var(--series-1)"></i>Probabilidade prevista</span>
+      <span><i class="dot" style="background:var(--series-2)"></i>Dia em que choveu (≥ 1 mm)</span>
+    </div>
+    <div class="chart" id="chBacktest"></div>
+  </section>
+
+  <section class="grid g-2">
+    <div class="card">
+      <h2>Desempenho no teste</h2>
+      <p class="sub" id="subMetricas"></p>
+      <div class="table-scroll"><table id="tbMetricas"></table></div>
+    </div>
+    <div class="card">
+      <h2>As probabilidades são confiáveis?</h2>
+      <p class="sub">Quando o modelo diz X%, chove em cerca de X% dos dias? (linha tracejada = ideal)</p>
+      <div class="chart" id="chConfiab"></div>
+    </div>
+  </section>
+
+  <section class="card note">
+    <h2>Sobre o modelo</h2>
+    <p>Um <b>Random Forest</b> foi treinado com a série da estação automática do INMET em Uberaba (A568, 2017–2026) e com as previsões do modelo global japonês <b>JMA GSM</b> emitidas com 1 dia de antecedência. Ele aprende a corrigir os vieses locais da previsão numérica e devolve uma probabilidade calibrada.</p>
+    <p>Como a API pública do INMET não está entregando dados recentes, o dashboard usa o JMA também no lugar das observações do dia, <b>convertido para a escala da estação</b> por mapeamento de quantis. O teste retroativo acima mede o efeito dessa substituição.</p>
+    <p id="infoModelo" class="mono"></p>
+  </section>
+
+  <footer>
+    Dados meteorológicos: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (JMA GSM, CC BY 4.0) ·
+    Série histórica: <a href="https://portal.inmet.gov.br/" target="_blank" rel="noopener">INMET</a> ·
+    Projeto de Thiago Damasceno Silva. Previsão experimental — não substitui os avisos oficiais da Defesa Civil e do INMET.
+  </footer>
+</div>
+
+<script>
+(() => {
+  // ---------- tema ----------
+  const root = document.documentElement;
+  try { const t = localStorage.getItem("tema"); if (t) root.dataset.theme = t; } catch (e) {}
+  document.getElementById("themeBtn").addEventListener("click", () => {
+    const escuro = root.dataset.theme ? root.dataset.theme === "dark"
+      : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme = escuro ? "light" : "dark";
+    try { localStorage.setItem("tema", root.dataset.theme); } catch (e) {}
+  });
+
+  // ---------- utilidades ----------
+  const $ = id => document.getElementById(id);
+  const fmt = (v, c = 1) => v == null || isNaN(v) ? "—" : Number(v).toLocaleString("pt-BR", { minimumFractionDigits: c, maximumFractionDigits: c });
+  const pct = v => v == null ? "—" : Math.round(v * 100) + "%";
+  const meses = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+  const diasSem = ["domingo","segunda-feira","terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado"];
+  const parseD = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+  const dCurta = s => { const d = parseD(s); return d.getDate() + " " + meses[d.getMonth()]; };
+  const dLonga = s => { const d = parseD(s); return diasSem[d.getDay()] + ", " + d.getDate() + " de " + meses[d.getMonth()] + " de " + d.getFullYear(); };
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag, attrs = {}, parent) => {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  };
+  const getJSON = async url => { const r = await fetch(url + "?v=" + Date.now()); if (!r.ok) throw new Error(url); return r.json(); };
+  const niceMax = v => { if (!(v > 0)) return 1; const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 2, 2.5, 5, 10]) if (m * p >= v) return m * p; return 10 * p; };
+
+  // tooltip compartilhado por gráfico
+  function tooltip(container) {
+    const t = document.createElement("div"); t.className = "tip"; container.appendChild(t);
+    return {
+      show(html, x, y) {
+        t.innerHTML = html; t.style.opacity = 1;
+        const w = container.clientWidth, tw = t.offsetWidth;
+        t.style.left = Math.min(Math.max(x - tw / 2, 0), w - tw) + "px";
+        t.style.top = Math.max(y - t.offsetHeight - 10, -8) + "px";
+      },
+      hide() { t.style.opacity = 0; }
+    };
+  }
+
+  // ---------- gráfico de barras (uma série) ----------
+  function barras(container, dados, { rotulo, valor, unidade = "mm", cor = "var(--series-1)", altura = 220, tickCada = 1, dica }) {
+    container.innerHTML = "";
+    if (!dados.length) { container.innerHTML = '<div class="empty">Sem dados</div>'; return; }
+    const W = Math.max(container.clientWidth, 280), H = altura, m = { t: 12, r: 8, b: 26, l: 34 };
+    const iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const vmax = niceMax(Math.max(...dados.map(d => valor(d) || 0)) * 1.05);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" }, container);
+    const ax = el("g", { class: "axis" }, svg);
+    for (let i = 0; i <= 4; i++) {
+      const v = vmax * i / 4, y = m.t + ih - ih * i / 4;
+      if (i > 0) el("line", { x1: m.l, x2: W - m.r, y1: y, y2: y, class: "gridline" }, ax);
+      el("text", { x: m.l - 6, y: y + 4, "text-anchor": "end" }, ax).textContent = fmt(v, vmax < 4 ? 1 : 0);
+    }
+    const bw = iw / dados.length, gap = Math.min(2, bw * .2);
+    const tip = tooltip(container);
+    dados.forEach((d, i) => {
+      const v = valor(d), x = m.l + i * bw;
+      if (v != null && v > 0) {
+        const h = Math.max(ih * v / vmax, 1), y = m.t + ih - h, w = Math.max(bw - gap, 1), r = Math.min(4, w / 2, h);
+        el("path", { d: `M${x + gap / 2},${y + h} V${y + r} q0,-${r} ${r},-${r} H${x + gap / 2 + w - r} q${r},0 ${r},${r} V${y + h} Z`, fill: cor }, svg);
+      }
+      if (i % tickCada === 0) el("text", { x: x + bw / 2, y: H - 8, "text-anchor": "middle" }, ax).textContent = rotulo(d);
+      const hit = el("rect", { x, y: m.t, width: bw, height: ih, fill: "transparent" }, svg);
+      hit.addEventListener("mouseenter", () => {
+        const r = container.getBoundingClientRect(), s = r.width / W;
+        tip.show(dica ? dica(d) : `<b>${rotulo(d)}</b><br>${fmt(v)} ${unidade}`, (x + bw / 2) * s, (m.t + ih - ih * (v || 0) / vmax) * s);
+      });
+      hit.addEventListener("mouseleave", tip.hide);
+    });
+    el("line", { x1: m.l, x2: W - m.r, y1: m.t + ih, y2: m.t + ih, class: "baseline" }, svg);
+  }
+
+  // ---------- linha de probabilidade (0–100%) com marcadores opcionais ----------
+  function linhaProb(container, dados, { altura = 240, marcar, dica, tickCada }) {
+    container.innerHTML = "";
+    if (!dados.length) { container.innerHTML = '<div class="empty">Ainda não há previsões suficientes</div>'; return; }
+    const W = Math.max(container.clientWidth, 280), H = altura, m = { t: 12, r: 12, b: 26, l: 40 };
+    const iw = W - m.l - m.r, ih = H - m.t - m.b, n = dados.length;
+    const X = i => m.l + (n === 1 ? iw / 2 : iw * i / (n - 1));
+    const Y = v => m.t + ih - ih * v;
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" }, container);
+    const ax = el("g", { class: "axis" }, svg);
+    [0, .25, .5, .75, 1].forEach(v => {
+      if (v > 0) el("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: "gridline" }, ax);
+      el("text", { x: m.l - 8, y: Y(v) + 4, "text-anchor": "end" }, ax).textContent = Math.round(v * 100) + "%";
+    });
+    el("line", { x1: m.l, x2: W - m.r, y1: Y(0), y2: Y(0), class: "baseline" }, svg);
+    const passo = tickCada || Math.max(1, Math.ceil(n / Math.max(2, Math.floor(iw / 90))));
+    dados.forEach((d, i) => { if (i % passo === 0) el("text", { x: X(i), y: H - 8, "text-anchor": "middle" }, ax).textContent = dCurta(d.data_alvo); });
+    if (n > 1) {
+      el("path", { d: dados.map((d, i) => (i ? "L" : "M") + X(i) + "," + Y(d.p)).join(""), fill: "none",
+        stroke: "var(--series-1)", "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+    }
+    if (n <= iw / 12) dados.forEach((d, i) => el("circle", { cx: X(i), cy: Y(d.p), r: 4, fill: "var(--series-1)", stroke: "var(--surface-1)", "stroke-width": 2 }, svg));
+    if (marcar) dados.forEach((d, i) => { if (marcar(d)) el("circle", { cx: X(i), cy: Y(0) - 7, r: 4, fill: "var(--series-2)", stroke: "var(--surface-1)", "stroke-width": 2 }, svg); });
+    // crosshair
+    const cross = el("line", { y1: m.t, y2: m.t + ih, stroke: "var(--text-muted)", "stroke-width": 1, "stroke-dasharray": "3 3", opacity: 0 }, svg);
+    const ponto = el("circle", { r: 5, fill: "var(--series-1)", stroke: "var(--surface-1)", "stroke-width": 2, opacity: 0 }, svg);
+    const tip = tooltip(container);
+    const area = el("rect", { x: m.l, y: m.t, width: iw, height: ih, fill: "transparent" }, svg);
+    area.addEventListener("mousemove", ev => {
+      const r = container.getBoundingClientRect(), s = r.width / W;
+      const xs = (ev.clientX - r.left) / s;
+      const i = Math.max(0, Math.min(n - 1, Math.round(n === 1 ? 0 : (xs - m.l) / iw * (n - 1))));
+      const d = dados[i];
+      cross.setAttribute("x1", X(i)); cross.setAttribute("x2", X(i)); cross.setAttribute("opacity", 1);
+      ponto.setAttribute("cx", X(i)); ponto.setAttribute("cy", Y(d.p)); ponto.setAttribute("opacity", 1);
+      tip.show(dica(d), X(i) * s, Y(d.p) * s);
+    });
+    area.addEventListener("mouseleave", () => { cross.setAttribute("opacity", 0); ponto.setAttribute("opacity", 0); tip.hide(); });
+  }
+
+  // ---------- diagrama de confiabilidade ----------
+  function confiab(container, c) {
+    container.innerHTML = "";
+    const W = Math.max(container.clientWidth, 280), H = Math.min(320, Math.round(W * .72)), m = { t: 12, r: 12, b: 40, l: 58 }, iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const X = v => m.l + iw * v, Y = v => m.t + ih - ih * v;
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Diagrama de confiabilidade" }, container);
+    const ax = el("g", { class: "axis" }, svg);
+    [0, .25, .5, .75, 1].forEach(v => {
+      if (v > 0) el("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: "gridline" }, ax);
+      el("text", { x: m.l - 8, y: Y(v) + 4, "text-anchor": "end" }, ax).textContent = Math.round(v * 100) + "%";
+      el("text", { x: X(v), y: H - 22, "text-anchor": "middle" }, ax).textContent = Math.round(v * 100) + "%";
+    });
+    el("text", { x: m.l + iw / 2, y: H - 4, "text-anchor": "middle" }, ax).textContent = "Probabilidade prevista";
+    const ty = el("text", { x: 12, y: m.t + ih / 2, "text-anchor": "middle", transform: `rotate(-90 12 ${m.t + ih / 2})` }, ax);
+    ty.textContent = "Frequência observada";
+    el("line", { x1: X(0), y1: Y(0), x2: X(1), y2: Y(1), stroke: "var(--text-muted)", "stroke-dasharray": "4 4", "stroke-width": 1 }, svg);
+    el("line", { x1: m.l, x2: W - m.r, y1: Y(0), y2: Y(0), class: "baseline" }, svg);
+    const pts = c.prob_prevista.map((p, i) => [p, c.freq_observada[i]]);
+    el("path", { d: pts.map((p, i) => (i ? "L" : "M") + X(p[0]) + "," + Y(p[1])).join(""), fill: "none", stroke: "var(--series-1)", "stroke-width": 2 }, svg);
+    const tip = tooltip(container);
+    pts.forEach(p => {
+      el("circle", { cx: X(p[0]), cy: Y(p[1]), r: 5, fill: "var(--series-1)", stroke: "var(--surface-1)", "stroke-width": 2 }, svg);
+      const hit = el("circle", { cx: X(p[0]), cy: Y(p[1]), r: 14, fill: "transparent" }, svg);
+      hit.addEventListener("mouseenter", () => {
+        const s = container.getBoundingClientRect().width / W;
+        tip.show(`Previsto: <b>${pct(p[0])}</b><br><span class="k">Choveu em</span> <b>${pct(p[1])}</b> <span class="k">dos dias</span>`, X(p[0]) * s, Y(p[1]) * s);
+      });
+      hit.addEventListener("mouseleave", tip.hide);
+    });
+  }
+
+  // ---------- montagem ----------
+  function kpi(lab, val, un) { return `<div class="kpi"><div class="lab">${lab}</div><div class="val">${val}<span>${un || ""}</span></div></div>`; }
+
+  function renderPrevisao(p) {
+    if (p.status === "erro") {
+      $("status").classList.add("show");
+      $("statusTxt").textContent = `A atualização de ${p.erro_em ? p.erro_em.slice(0, 10).split("-").reverse().join("/") : "hoje"} falhou (${p.erro}). Exibindo a última previsão válida.`;
+    }
+    if (p.probabilidade == null) return;
+    $("heroDate").textContent = "Amanhã · " + dLonga(p.data_alvo);
+    $("heroNum").innerHTML = Math.round(p.probabilidade * 100) + "<small>%</small>";
+    $("heroCat").textContent = p.categoria;
+    $("meterFill").style.width = (p.probabilidade * 100) + "%";
+    $("meterTick").style.left = `calc(${p.limiar * 100}% - 1px)`;
+    $("meter").setAttribute("aria-label", `Probabilidade de chuva: ${pct(p.probabilidade)}. Limiar de decisão do modelo: ${pct(p.limiar)}.`);
+    if (p.vai_chover) $("meterLegend").innerHTML = `Traço = limiar de decisão do modelo (${pct(p.limiar)}). Amanhã está acima dele: o modelo classifica o dia como <b>chuvoso</b>.`;
+    else $("meterLegend").innerHTML = `Traço = limiar de decisão do modelo (${pct(p.limiar)}). Amanhã está abaixo dele: o modelo classifica o dia como <b>seco</b>.`;
+    const j = p.jma_amanha || {}, h = p.condicoes_hoje || {};
+    $("kpisAmanha").innerHTML =
+      kpi("Chuva prevista", fmt(j.chuva_mm), " mm") + kpi("Horas com chuva", fmt(j.horas_chuva, 0), " h") +
+      kpi("Nebulosidade média", fmt(j.nuvens_pct, 0), "%") + kpi("Temperatura máxima", fmt(j.temp_max_c), " °C") +
+      kpi("Chuva nos últimos 7 dias", fmt(h.chuva_acum_7d_mm, 0), " mm") + kpi("Dias seguidos sem chuva", fmt(h.dias_sem_chuva, 0), "");
+    const hr = p.horario_amanha || [];
+    barras($("chHorario"), hr, { rotulo: d => d.hora.slice(0, 2) + "h", valor: d => d.chuva_mm, tickCada: 3,
+      dica: d => `<b>${d.hora}</b><br>Chuva: <b>${fmt(d.chuva_mm, 1)} mm</b><br><span class="k">Nuvens</span> ${fmt(d.nuvens_pct, 0)}% · <span class="k">Temp.</span> ${fmt(d.temp_c)} °C` });
+    $("subHorario").textContent = "Amanhã (" + dCurta(p.data_alvo) + ") · modelo JMA GSM · horário de Brasília";
+    barras($("chRecentes"), p.ultimos_dias || [], { rotulo: d => dCurta(d.data).split(" ")[0], valor: d => d.chuva_est_mm, tickCada: 1,
+      dica: d => `<b>${dCurta(d.data)}</b><br>Chuva estimada: <b>${fmt(d.chuva_est_mm)} mm</b><br><span class="k">Máx.</span> ${fmt(d.temp_max_c)} °C · <span class="k">Umid.</span> ${fmt(d.umid_media_pct, 0)}%` });
+    const m = p.modelo || {};
+    $("infoModelo").textContent = `Atualizado em ${p.gerado_em ? p.gerado_em.replace("T", " ") : "—"} · modelo treinado até ${m.treinado_ate || "—"} · fonte: ${m.fonte || "—"}` +
+      (p.features_ausentes ? ` · ${p.features_ausentes} variáveis ausentes` : "");
+  }
+
+  function renderHistorico(hist) {
+    const dados = hist.map(h => ({ data_alvo: h.data_alvo, p: h.probabilidade, mm: h.jma_chuva_mm }));
+    $("subHist").textContent = dados.length < 7
+      ? `Probabilidade calculada a cada dia para o dia seguinte — o histórico começa a se formar a partir de ${dados.length ? dCurta(dados[0].data_alvo) : "hoje"}`
+      : "Probabilidade calculada a cada dia para o dia seguinte (últimos 180 dias)";
+    linhaProb($("chHistorico"), dados.slice(-180), { altura: dados.length < 7 ? 160 : 240,
+      dica: d => `<b>${dCurta(d.data_alvo)}</b><br>Probabilidade: <b>${pct(d.p)}</b><br><span class="k">JMA previu</span> ${fmt(d.mm)} mm` });
+  }
+
+  function renderBacktest(b) {
+    const serie = b.serie.slice(-120).map(s => ({ data_alvo: s.data_alvo, p: s.prob, choveu: s.choveu, obs: s.chuva_obs_mm, jma: s.chuva_jma_mm }));
+    linhaProb($("chBacktest"), serie, { altura: 260, marcar: d => d.choveu === 1,
+      dica: d => `<b>${dCurta(d.data_alvo)}</b><br>Previsto: <b>${pct(d.p)}</b><br>Observado (INMET): <b>${fmt(d.obs)} mm</b>${d.choveu ? " ☂" : ""}<br><span class="k">JMA previu</span> ${fmt(d.jma)} mm` });
+    $("subBacktest").textContent = `Últimos 120 dias do teste (${dCurta(serie[0].data_alvo)} a ${dCurta(serie[serie.length - 1].data_alvo)} de ${serie[serie.length - 1].data_alvo.slice(0, 4)}) — dias que não entraram no treino`;
+    const nomes = { "JMA mapeado (dashboard)": "Este dashboard (JMA no lugar do INMET)", "INMET real": "Com dados reais do INMET",
+      "Previsão numérica pura (JMA)": "Previsão do JMA, sem correção", "Climatologia": "Climatologia (média do mês)" };
+    const ordem = ["JMA mapeado (dashboard)", "INMET real", "Previsão numérica pura (JMA)", "Climatologia"];
+    let html = "<thead><tr><th>Abordagem</th><th>AUC</th><th>Precisão média</th><th>Acerto ao prever chuva</th></tr></thead><tbody>";
+    ordem.filter(k => b.metricas[k]).forEach(k => {
+      const mt = b.metricas[k];
+      html += `<tr class="${k.startsWith("JMA mapeado") ? "destaque" : ""}"><td>${nomes[k]}</td><td>${fmt(mt.AUC, 2)}</td><td>${fmt(mt.AP, 2)}</td><td>${pct(mt.precisao)}</td></tr>`;
+    });
+    $("tbMetricas").innerHTML = html + "</tbody>";
+    $("subMetricas").textContent = `${b.n_dias} dias (${b.periodo.map(s => s.split("-").reverse().join("/")).join(" a ")}). AUC: 0,5 = acaso, 1 = perfeito.`;
+    confiab($("chConfiab"), b.confiabilidade);
+  }
+
+  const ultimos = {};
+  let tResize;
+  addEventListener("resize", () => {
+    clearTimeout(tResize);
+    tResize = setTimeout(() => {
+      if (ultimos.p) renderPrevisao(ultimos.p);
+      if (ultimos.h) renderHistorico(ultimos.h);
+      if (ultimos.b) renderBacktest(ultimos.b);
+    }, 150);
+  });
+
+  getJSON("data/previsao.json").then(p => { ultimos.p = p; renderPrevisao(p); }).catch(() => {
+    $("heroDate").textContent = "Previsão ainda não disponível";
+    $("status").classList.add("show"); $("statusTxt").textContent = "Não foi possível carregar a previsão.";
+  });
+  getJSON("data/historico.json").then(h => { ultimos.h = h; renderHistorico(h); }).catch(() => renderHistorico([]));
+  getJSON("data/backtest.json").then(b => { ultimos.b = b; renderBacktest(b); }).catch(() => {
+    $("chBacktest").innerHTML = '<div class="empty">Teste retroativo indisponível</div>';
+  });
+})();
+</script>
+</body>
+</html>

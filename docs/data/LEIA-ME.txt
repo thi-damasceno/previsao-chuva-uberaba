@@ -1,0 +1,1 @@
+previsao.json e historico.json são gerados automaticamente. Coloque aqui o backtest.json do notebook de preparação.
