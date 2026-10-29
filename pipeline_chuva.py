@@ -251,11 +251,44 @@ def features_nwp(h_utc):
     })
 
 
-def montar_tabela(h_obs, h_amanha, mapa):
-    """Tabela diária completa: linha D = 'tempo' de D (JMA mapeado para INMET) + previsão para D+1."""
-    dia = derivar_features(aplicar_mapeamento(jma_para_inmet_diario(h_obs), mapa))
+def montar_tabela(h_obs, h_amanha, mapa=None):
+    """Tabela diária completa: linha D = 'tempo' de D segundo o JMA + previsão para D+1.
+    mapa=None -> JMA direto (sem conversão para a escala do INMET)."""
+    dia = jma_para_inmet_diario(h_obs)
+    if mapa:
+        dia = aplicar_mapeamento(dia, mapa)
+    dia = derivar_features(dia)
     nwp = features_nwp(h_amanha).shift(-1)                 # linha D recebe a previsão de D+1
     return dia.join(nwp, how="left")
+
+
+CHUVA = ["precip_mm", "precip_max_1h_mm", "horas_chuva"]
+
+
+def combinar_observacoes(obs_inmet_d, h_obs_jma, mapa):
+    """Diário com as medições do INMET; nos dias (ou variáveis) sem medição, completa com o JMA.
+    O complemento usa o JMA convertido para a escala da estação (necessário para pressão, vento etc.
+    se misturarem com o INMET), exceto a chuva, que entra com o valor direto do JMA.
+    Retorna (diário, fonte) — fonte = 'INMET' | 'JMA' | 'misto' por dia."""
+    jma_bruto = jma_para_inmet_diario(h_obs_jma)
+    jma_comp = aplicar_mapeamento(jma_bruto, mapa) if mapa else jma_bruto.copy()
+    jma_comp[CHUVA] = jma_bruto[CHUVA]
+    obs = obs_inmet_d.reindex(columns=VARS_INMET) if len(obs_inmet_d) else pd.DataFrame(columns=VARS_INMET)
+    idx = jma_comp.index.union(obs.index)
+    obs, jma_comp = obs.reindex(idx), jma_comp.reindex(idx)
+    dia = obs.combine_first(jma_comp)
+    tem_chuva, tem_temp = obs["precip_mm"].notna(), obs["temp_media_c"].notna()
+    fonte = pd.Series("JMA", index=idx)
+    fonte[tem_chuva | tem_temp] = "misto"
+    fonte[tem_chuva & tem_temp] = "INMET"
+    return dia[VARS_INMET], fonte
+
+
+def montar_tabela_hibrida(obs_inmet_d, h_obs_jma, h_amanha, mapa):
+    """Linha D = medições do INMET em D e nos dias anteriores (JMA só onde faltar) + previsão JMA para D+1."""
+    dia, fonte = combinar_observacoes(obs_inmet_d, h_obs_jma, mapa)
+    tab = derivar_features(dia).join(features_nwp(h_amanha).shift(-1), how="left")
+    return tab, fonte, dia
 
 
 def prever(pacote, tabela, dia_base):

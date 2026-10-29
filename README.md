@@ -2,12 +2,17 @@
 
 Dashboard com a probabilidade de chuva (≥ 1 mm) para o dia seguinte em Uberaba-MG, atualizado automaticamente todos os dias.
 
-**Como funciona:** um Random Forest treinado com a série da estação automática do INMET (A568, 2017–2026) e com as previsões do modelo global JMA GSM corrige os vieses locais da previsão numérica e devolve uma probabilidade calibrada. Como a API pública do INMET não está entregando dados recentes, as observações do dia são substituídas pelo próprio JMA, convertido para a escala da estação por mapeamento de quantis.
+**Como funciona:** um Random Forest treinado com a série da estação automática do INMET (A568, 2017–2026) e com as previsões do modelo global JMA GSM corrige os vieses locais da previsão numérica e devolve uma probabilidade calibrada. Todos os dias, o GitHub Actions coleta as medições da estação na página TEMPO do INMET (navegador automatizado) e as combina com a previsão do JMA para amanhã. Nos dias sem medição, o JMA cobre a lacuna.
 
 ```
 previsao-chuva-uberaba/
-├── pipeline_chuva.py            # funções comuns (busca, conversão JMA→INMET, features)
-├── previsao_diaria.py           # roda todo dia no GitHub Actions
+├── pipeline_chuva.py            # funções comuns (JMA, features, combinação INMET + JMA)
+├── inmet_obs.py                 # leitura e tratamento das medições do INMET (mesmo critério do treino)
+├── coletar_inmet.py             # coleta diária na página TEMPO (Playwright) + importação manual
+├── previsao_diaria.py           # roda todo dia no GitHub Actions, depois da coleta
+├── dados/
+│   ├── inmet_A568_horario.csv        # medições horárias acumuladas (UTC)
+│   └── importar/                     # CSVs baixados manualmente do TEMPO entram por aqui
 ├── requirements.txt
 ├── modelo/
 │   ├── modelo_chuva_amanha.joblib    # ← você adiciona (notebook de treino)
@@ -20,7 +25,7 @@ previsao-chuva-uberaba/
 │       ├── backtest.json             # ← você adiciona (notebook de preparação)
 │       ├── previsao.json             # gerado todo dia
 │       └── historico.json            # gerado todo dia
-└── .github/workflows/previsao.yml    # agendamento diário (20h10, horário de Brasília)
+└── .github/workflows/previsao.yml    # agendamento diário (23h30, horário de Brasília)
 ```
 
 ## Passo a passo
@@ -47,8 +52,9 @@ O site fica em `https://thi-damasceno.github.io/previsao-chuva-uberaba/`.
 
 ## Manutenção
 - **Falha na atualização:** o dashboard mostra um aviso e mantém a última previsão válida; o erro aparece na aba *Actions*.
+- **Coleta do INMET:** cada execução gera o artefato *diagnostico-coleta-inmet* (captura de tela da página e resumo da coleta), disponível por 7 dias na própria execução da aba *Actions*.
+- **Lacunas nas medições:** baixe o CSV do período na página TEMPO e coloque em `dados/importar/` (*Add file → Upload files*). Ele é importado na execução seguinte.
 - **Retreinar o modelo:** substitua o `.joblib` em `modelo/` e rode de novo o notebook de preparação (o mapeamento e o teste retroativo dependem do modelo).
-- **Quando houver token do INMET:** basta trocar a fonte das observações do dia em `pipeline_chuva.py` — o modelo já foi treinado com dados reais da estação.
 
 ## Fontes e créditos
 - Previsões: [Open-Meteo](https://open-meteo.com/) — modelo JMA GSM (dados sob licença CC BY 4.0).

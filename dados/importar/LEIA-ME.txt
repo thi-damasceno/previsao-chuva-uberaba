@@ -1,0 +1,1 @@
+Coloque aqui CSVs baixados da página TEMPO (estação A568). Eles são importados na próxima execução e movidos para processados/.
