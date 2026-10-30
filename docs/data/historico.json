@@ -5,5 +5,12 @@
   "limiar": 0.31,
   "jma_chuva_mm": 4.4,
   "gerado_em": "2026-10-29T18:23-03:00"
+ },
+ {
+  "data_alvo": "2026-10-31",
+  "probabilidade": 0.71,
+  "limiar": 0.31,
+  "jma_chuva_mm": 6.6,
+  "gerado_em": "2026-10-30T05:53-03:00"
  }
 ]
