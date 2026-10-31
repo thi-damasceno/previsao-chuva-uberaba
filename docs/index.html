@@ -409,31 +409,31 @@ footer a { color: var(--text-secondary); }
       <div class="num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></div>
       <span class="tag">1 · Dados</span>
       <h3>9 anos de medições</h3>
-      <p>Estação automática do INMET em Uberaba (A568), dados horários de 2017 a 2026, tratados: limites físicos, lacunas curtas preenchidas e agregação por dia local.</p>
+      <p>Dados horários da estação automática A568 do INMET, em Uberaba-MG, de 2017 a 2026. As informações passaram por verificações de consistência, tratamento de falhas e organização em registros diários.</p>
     </div>
     <div class="card step">
       <div class="num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></div>
       <span class="tag">2 · Variáveis</span>
-      <h3>70 sinais por dia</h3>
-      <p>61 do INMET (chuva, umidade, pressão, vento, radiação, acumulados e valores dos dias anteriores) e 9 da previsão do JMA para amanhã, emitida na véspera.</p>
+      <h3>70 informações por dia</h3>
+      <p>O modelo utiliza 70 variáveis meteorológicas: 61 obtidas do INMET, incluindo chuva, umidade, pressão, vento e radiação, e outras 9 provenientes da previsão do JMA para o dia seguinte, disponibilizada na véspera.</p>
     </div>
     <div class="card step">
       <div class="num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><circle cx="6" cy="12" r="2"/><circle cx="18" cy="12" r="2"/><circle cx="3" cy="20" r="1.5"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M11 5.5 7 10.5M13 5.5l4 5M5.2 13.7 3.6 18.5M6.8 13.7l1.6 4.8M18 14v4.5"/></svg></div>
       <span class="tag">3 · Random Forest</span>
       <h3>400 árvores</h3>
-      <p>Cada árvore vê uma amostra sorteada dos dias e 30% das variáveis em cada divisão (profundidade máx. 10, folhas com ≥ 40 dias). Hiperparâmetros escolhidos por validação cruzada temporal.</p>
+      <p>O modelo reúne 400 árvores, cada uma analisando diferentes combinações de dias e variáveis meteorológicas. Os parâmetros foram ajustados por meio de testes com diferentes períodos históricos, buscando melhorar a capacidade de previsão.</p>
     </div>
     <div class="card step">
       <div class="num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20 20 4" stroke-dasharray="2 3"/><path d="M4 20c4-1 5-4 7-7s5-6 9-9"/></svg></div>
       <span class="tag">4 · Calibração</span>
-      <h3>Probabilidade honesta</h3>
-      <p>Uma regressão isotônica ajusta o voto médio para que “60%” signifique chover em cerca de 60% dos dias. O limiar chove/não chove foi escolhido só com dados de treino.</p>
+      <h3>Probabilidades mais confiáveis</h3>
+      <p>Uma etapa de calibração ajusta as probabilidades estimadas pelo modelo para aproximá-las das frequências reais de chuva. Assim, uma previsão de 60% busca representar uma situação em que chove em aproximadamente 60% dos dias com probabilidades semelhantes.</p>
     </div>
     <div class="card step">
       <div class="num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg></div>
       <span class="tag">5 · Validação</span>
-      <h3>Testado no futuro</h3>
-      <p>Treino de 2017 a 2023 e teste em 2024–2026 (910 dias nunca vistos). AUC 0,90 contra 0,88 do JMA puro e 0,77 da climatologia; ganho confirmado por bootstrap.</p>
+      <h3>Testado com dados futuros</h3>
+      <p>O modelo foi treinado com dados de 2017 a 2023 e avaliado em 910 dias de 2024 a 2026, que não participaram do treinamento. Alcançou AUC de 0,90, superando o JMA isolado (0,88) e a climatologia histórica (0,77). A diferença também foi avaliada por reamostragem estatística (bootstrap).</p>
     </div>
   </div>
 
