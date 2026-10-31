@@ -428,13 +428,13 @@ footer a { color: var(--text-secondary); }
       <div class="num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20 20 4" stroke-dasharray="2 3"/><path d="M4 20c4-1 5-4 7-7s5-6 9-9"/></svg></div>
       <span class="tag">4 · Calibração</span>
       <h3>Confiabilidade</h3>
-      <p>Uma etapa de calibração ajusta as probabilidades estimadas pelo modelo para aproximá-las das frequências reais de chuva. Assim, uma previsão de 60% busca representar uma situação em que chove em aproximadamente 60% dos dias com probabilidades semelhantes.</p>
+      <p>As probabilidades estimadas pelo modelo foram calibradas para aproximá-las das frequências reais de chuva. Assim, uma previsão de 60% busca representar uma situação em que chove em aproximadamente 60% dos dias com probabilidades semelhantes.</p>
     </div>
     <div class="card step">
       <div class="num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg></div>
       <span class="tag">5 · Validação</span>
-      <h3>Testado com dados futuros</h3>
-      <p>O modelo foi treinado com dados de 2017 a 2023 e avaliado em 910 dias de 2024 a 2026, que não participaram do treinamento. Alcançou AUC de 0,90, superando o JMA isolado (0,88) e a climatologia histórica (0,77). A diferença também foi avaliada por reamostragem estatística (bootstrap).</p>
+      <h3>Testado no futuro</h3>
+      <p>O modelo foi treinado com dados de 2017 a 2023 e avaliado em 910 dias de 2024 a 2026, que não participaram do treinamento. Alcançou AUC de 0,90, superando o JMA isolado (0,88) e a climatologia histórica (0,77). A diferença também foi avaliada por bootstrap.</p>
     </div>
   </div>
 
