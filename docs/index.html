@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Chuva Amanhã — Uberaba</title>
+<title>Chuva Amanhã em Uberaba-MG</title>
 <meta name="description" content="Probabilidade de chuva para amanhã em Uberaba-MG — Random Forest com medições do INMET e previsão do modelo JMA GSM.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -334,7 +334,7 @@ footer a { color: var(--text-secondary); }
       <button class="theme-btn" id="themeBtn" type="button" aria-label="Alternar tema claro/escuro">◐ Tema</button>
     </div>
     <h1>Vai chover amanhã em Uberaba?</h1>
-    <p class="lead">Probabilidade de chover pelo menos 1 mm no dia seguinte, recalculada todas as noites. Um <b>Random Forest</b> combina as medições da estação do <b>INMET</b> com a previsão do modelo global japonês <b>JMA</b> e corrige os vieses locais da previsão numérica.</p>
+    <p class="lead">Probabilidade de chover pelo menos 1 mm no dia seguinte, recalculadas todas as noites. Um modelo <b>Random Forest</b> que combina as medições da estação do <b>INMET</b> com a previsão do modelo global japonês <b>JMA</b> e corrige os vieses locais da previsão numérica.</p>
     <div class="btns">
       <a class="btn btn-solid" href="#modelo">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6M12 9l-4 4M12 9l4 4M8 13l-3 4M8 13l2 4M16 13l-2 4M16 13l3 4"/></svg>
@@ -372,7 +372,7 @@ footer a { color: var(--text-secondary); }
     </div>
   </div>
 
-  <div class="sec-title">Amanhã e os últimos dias</div>
+  <div class="sec-title">Histórico recente e previsão horária</div>
   <section class="grid g-2" style="margin-top:12px">
     <div class="card">
       <h2>Chuva prevista hora a hora</h2>
@@ -381,7 +381,7 @@ footer a { color: var(--text-secondary); }
     </div>
     <div class="card">
       <h2>Últimos 14 dias</h2>
-      <p class="sub">Chuva diária medida na estação INMET A568 (Uberaba)</p>
+      <p class="sub">Chuva diária medida na estação INMET A568 (Uberaba-MG)</p>
       <div class="legend">
         <span><i style="background:var(--series-1)"></i>Medida (INMET)</span>
         <span id="legJma" hidden><i style="background:var(--estimado)"></i>Estimada pelo JMA (sem medição)</span>
@@ -402,7 +402,7 @@ footer a { color: var(--text-secondary); }
 
   <!-- ===================== COMO O MODELO FOI DESENVOLVIDO ===================== -->
   <div class="sec-title" id="modelo">Como o modelo foi desenvolvido</div>
-  <p class="sec-lead">Um <b>Random Forest</b> é um conjunto de muitas árvores de decisão. Cada árvore aprende regras simples do tipo “se a previsão do JMA passa de X mm e o ar está úmido, então…”, mas a partir de uma amostra diferente dos dias e de um subconjunto diferente das variáveis. Sozinha, cada árvore erra bastante; a média dos votos de centenas delas é estável e precisa.</p>
+  <p class="sec-lead">Um <b>Random Forest</b> O Random Forest combina centenas de árvores de decisão, que analisam diferentes combinações de informações meteorológicas e dados históricos. Ao reunir os resultados dessas análises, o modelo identifica padrões associados à ocorrência de chuva e estima a probabilidade de precipitação. Cada árvore realiza sua própria previsão, considerando as condições apresentadas, enquanto o resultado final é obtido pela média dos votos de todas as árvores, tornando a estimativa mais estável e confiável. </p>
 
   <div class="grid g-5">
     <div class="card step">
