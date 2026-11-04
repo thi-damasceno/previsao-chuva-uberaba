@@ -832,7 +832,7 @@ footer a { color: var(--text-secondary); }
       dica: d => `<b>${dCurta(d.data_alvo)}</b><br>Previsto: <b>${pct(d.p)}</b><br>Observado (INMET): <b>${fmt(d.obs)} mm</b>${d.choveu ? " ☂" : ""}<br><span class="k">JMA previu</span> ${fmt(d.jma)} mm` });
     $("subBacktest").textContent = `Últimos 120 dias do teste (${dCurta(serie[0].data_alvo)} a ${dCurta(serie[serie.length - 1].data_alvo)} de ${serie[serie.length - 1].data_alvo.slice(0, 4)})`;
     const nomes = {
-      "INMET real": "Este dashboard (medições do INMET + previsão do JMA)",
+      "INMET real": "Este modelo (medições do INMET + previsão do JMA)",
       "JMA bruto (dashboard)": "Plano B: dias sem medição (JMA no lugar do INMET)",
       "JMA bruto": "Plano B: dias sem medição (JMA no lugar do INMET)",
       "JMA mapeado (dashboard)": "Plano B: dias sem medição (JMA no lugar do INMET)",
