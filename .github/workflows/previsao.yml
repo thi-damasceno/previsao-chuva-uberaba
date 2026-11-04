@@ -2,7 +2,10 @@ name: Previsão diária de chuva
 
 on:
   schedule:
-    - cron: "30 2 * * *"      # 02:30 UTC = 23:30 em Brasília (dia de hoje quase completo no INMET)
+    # A cada 2 horas (minuto 17 para fugir do pico de agendamentos do GitHub no minuto 0).
+    # Cada execução coleta o INMET; a previsão só é recalculada quando chegam medições novas.
+    # O disparo das 02:17 UTC (23:17 em Brasília) pega o dia de hoje quase completo.
+    - cron: "17 */2 * * *"
   workflow_dispatch:           # permite rodar manualmente pela aba Actions
 
 permissions:
@@ -31,7 +34,28 @@ jobs:
       - name: Coletar medições do INMET
         run: python coletar_inmet.py
 
+      - name: Verificar se há dados novos
+        id: novos
+        run: |
+          HOJE=$(TZ=America/Sao_Paulo date +%F)
+          LIDO=$(python -c "import json; p=json.load(open('docs/data/previsao.json')); print(p.get('data_base',''), p.get('status',''))" 2>/dev/null || echo "")
+          if [ -n "$(git status --porcelain -- dados/inmet_A568_horario.csv dados/importar)" ]; then
+            MOTIVO="medições novas do INMET"
+          elif [ "$LIDO" != "$HOJE ok" ]; then
+            MOTIVO="ainda não há previsão válida com base em hoje"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            MOTIVO="execução manual"
+          fi
+          if [ -n "$MOTIVO" ]; then
+            echo "Recalcular: $MOTIVO"
+            echo "rodar=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Sem medições novas desde a última previsão; nada a recalcular."
+            echo "rodar=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Gerar previsão
+        if: steps.novos.outputs.rodar == 'true'
         run: python previsao_diaria.py
 
       - name: Guardar diagnóstico da coleta
@@ -49,5 +73,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/data dados/inmet_A568_horario.csv dados/importar
-          git diff --cached --quiet || git commit -m "Previsão $(TZ=America/Sao_Paulo date +%F)"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Previsão $(TZ=America/Sao_Paulo date '+%F %H:%M')"
+          git pull --rebase --autostash   # caso você tenha enviado algum arquivo durante a execução
           git push
