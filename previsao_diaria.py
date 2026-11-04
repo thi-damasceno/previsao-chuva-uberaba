@@ -1,6 +1,6 @@
 """
-Previsão diária de chuva para Uberaba-MG — roda no GitHub Actions todo dia (~23h30, horário de Brasília),
-logo depois de coletar_inmet.py.
+Previsão diária de chuva para Uberaba-MG — roda no GitHub Actions logo depois de coletar_inmet.py,
+sempre que a coleta traz medições novas (verificação a cada 2 h).
 
 Entradas do modelo:
   - medições da estação INMET A568 (hoje e dias anteriores) — dados/inmet_A568_horario.csv
