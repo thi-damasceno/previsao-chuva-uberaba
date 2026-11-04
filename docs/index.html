@@ -489,8 +489,8 @@ footer a { color: var(--text-secondary); }
     </div>
 
     <div class="card">
-      <h2>Uma árvore que resume a floresta</h2>
-      <p class="sub">Árvore substituta (<i>surrogate</i>): poucas regras que imitam as decisões do Random Forest</p>
+      <h2>Como o modelo identifica condições favoráveis à chuva</h2>
+      <p class="sub">Uma árvore simplificada ajuda a visualizar os padrões identificados pelo Random Forest</p>
       <div class="diagram">
         <svg viewBox="0 0 560 300" role="img" aria-label="Árvore de decisão resumida com quatro regras e a probabilidade de chuva em cada uma">
           <!-- ligações -->
@@ -734,10 +734,10 @@ footer a { color: var(--text-secondary); }
   function desenharFolhas() {
     const g = $("folhas"); if (!g) return;
     const folhas = [
-      { x: 80, p: .06, txt: "tempo firme", ic: "i-sol" },
-      { x: 216, p: .27, txt: "pouca chance", ic: "i-parcial" },
-      { x: 344, p: .41, txt: "possível", ic: "i-chuva" },
-      { x: 480, p: .78, txt: "provável", ic: "i-chuva" },
+      { x: 80, p: .06, txt: "chance muito baixa", ic: "i-sol" },
+      { x: 216, p: .27, txt: "chance baixa", ic: "i-parcial" },
+      { x: 344, p: .41, txt: "chance moderada", ic: "i-chuva" },
+      { x: 480, p: .78, txt: "chance alta", ic: "i-chuva" },
     ];
     const css = getComputedStyle(root);
     const mix = (a, b, t) => {
