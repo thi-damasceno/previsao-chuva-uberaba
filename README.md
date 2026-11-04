@@ -1,15 +1,15 @@
 # Vai chover amanhã? — Uberaba-MG
 
-Dashboard com a probabilidade de chuva (≥ 1 mm) para o dia seguinte em Uberaba-MG, atualizado automaticamente todos os dias.
+Dashboard com a probabilidade de chuva (≥ 1 mm) para o dia seguinte em Uberaba-MG, atualizado automaticamente sempre que chegam medições novas do INMET.
 
-**Como funciona:** um Random Forest treinado com a série da estação automática do INMET (A568, 2017–2026) e com as previsões do modelo global JMA GSM corrige os vieses locais da previsão numérica e devolve uma probabilidade calibrada. Todos os dias, o GitHub Actions coleta as medições da estação na página TEMPO do INMET (navegador automatizado) e as combina com a previsão do JMA para amanhã. Nos dias sem medição, o JMA cobre a lacuna.
+**Como funciona:** um Random Forest treinado com a série da estação automática do INMET (A568, 2017–2026) e com as previsões do modelo global JMA GSM corrige os vieses locais da previsão numérica e devolve uma probabilidade calibrada. A cada 2 horas, o GitHub Actions coleta as medições da estação na página TEMPO do INMET (navegador automatizado) e, quando há medições novas, as combina com a previsão do JMA para amanhã e recalcula a probabilidade. Nos dias sem medição, o JMA cobre a lacuna.
 
 ```
 previsao-chuva-uberaba/
 ├── pipeline_chuva.py            # funções comuns (JMA, features, combinação INMET + JMA)
 ├── inmet_obs.py                 # leitura e tratamento das medições do INMET (mesmo critério do treino)
 ├── coletar_inmet.py             # coleta diária na página TEMPO (Playwright) + importação manual
-├── previsao_diaria.py           # roda todo dia no GitHub Actions, depois da coleta
+├── previsao_diaria.py           # roda no GitHub Actions quando a coleta traz dados novos
 ├── dados/
 │   ├── inmet_A568_horario.csv        # medições horárias acumuladas (UTC)
 │   └── importar/                     # CSVs baixados manualmente do TEMPO entram por aqui
@@ -23,9 +23,9 @@ previsao-chuva-uberaba/
 │   ├── index.html
 │   └── data/
 │       ├── backtest.json             # ← você adiciona (notebook de preparação)
-│       ├── previsao.json             # gerado todo dia
-│       └── historico.json            # gerado todo dia
-└── .github/workflows/previsao.yml    # agendamento diário (23h30, horário de Brasília)
+│       ├── previsao.json             # atualizado a cada medição nova
+│       └── historico.json            # atualizado a cada medição nova
+└── .github/workflows/previsao.yml    # coleta a cada 2 h; recalcula se houver dados novos
 ```
 
 ## Passo a passo
