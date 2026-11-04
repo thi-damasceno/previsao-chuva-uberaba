@@ -1,6 +1,6 @@
 {
  "status": "ok",
- "gerado_em": "2026-11-04T06:42-03:00",
+ "gerado_em": "2026-11-04T12:05-03:00",
  "data_base": "2026-11-04",
  "data_alvo": "2026-11-05",
  "probabilidade": 0.548,
@@ -8,7 +8,7 @@
  "limiar": 0.31,
  "vai_chover": true,
  "jma_amanha": {
-  "chuva_mm": 4.6,
+  "chuva_mm": 4.0,
   "horas_chuva": 8.0,
   "nuvens_pct": 92.0,
   "umid_pct": 83.0,
@@ -26,7 +26,7 @@
  "observacoes": {
   "fonte_hoje": "JMA",
   "dias_inmet_30d": 29,
-  "ultima_medicao_utc": "2026-11-04 09:00:00"
+  "ultima_medicao_utc": "2026-11-04 14:00:00"
  },
  "horario_amanha": [
   {
@@ -91,73 +91,73 @@
   },
   {
    "hora": "10:00",
-   "chuva_mm": 0.0,
+   "chuva_mm": 0.1,
    "nuvens_pct": 77.0,
    "temp_c": 26.5
   },
   {
    "hora": "11:00",
-   "chuva_mm": 0.0,
+   "chuva_mm": 0.1,
    "nuvens_pct": 81.0,
    "temp_c": 26.9
   },
   {
    "hora": "12:00",
-   "chuva_mm": 0.0,
+   "chuva_mm": 0.1,
    "nuvens_pct": 86.0,
    "temp_c": 27.3
   },
   {
    "hora": "13:00",
-   "chuva_mm": 0.0,
+   "chuva_mm": 0.1,
    "nuvens_pct": 92.0,
    "temp_c": 27.6
   },
   {
    "hora": "14:00",
-   "chuva_mm": 0.0,
+   "chuva_mm": 0.1,
    "nuvens_pct": 97.0,
    "temp_c": 27.8
   },
   {
    "hora": "15:00",
-   "chuva_mm": 0.0,
+   "chuva_mm": 0.1,
    "nuvens_pct": 100.0,
    "temp_c": 27.7
   },
   {
    "hora": "16:00",
-   "chuva_mm": 0.7,
+   "chuva_mm": 0.5,
    "nuvens_pct": 100.0,
    "temp_c": 27.4
   },
   {
    "hora": "17:00",
-   "chuva_mm": 0.7,
+   "chuva_mm": 0.5,
    "nuvens_pct": 100.0,
    "temp_c": 26.8
   },
   {
    "hora": "18:00",
-   "chuva_mm": 0.7,
+   "chuva_mm": 0.5,
    "nuvens_pct": 100.0,
    "temp_c": 26.1
   },
   {
    "hora": "19:00",
-   "chuva_mm": 0.7,
+   "chuva_mm": 0.5,
    "nuvens_pct": 100.0,
    "temp_c": 25.4
   },
   {
    "hora": "20:00",
-   "chuva_mm": 0.7,
+   "chuva_mm": 0.5,
    "nuvens_pct": 100.0,
    "temp_c": 24.7
   },
   {
    "hora": "21:00",
-   "chuva_mm": 0.7,
+   "chuva_mm": 0.5,
    "nuvens_pct": 100.0,
    "temp_c": 24.1
   },
