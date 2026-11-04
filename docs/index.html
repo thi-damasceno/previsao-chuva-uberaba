@@ -833,9 +833,9 @@ footer a { color: var(--text-secondary); }
     $("subBacktest").textContent = `Últimos 120 dias do teste (${dCurta(serie[0].data_alvo)} a ${dCurta(serie[serie.length - 1].data_alvo)} de ${serie[serie.length - 1].data_alvo.slice(0, 4)})`;
     const nomes = {
       "INMET real": "Este modelo (medições do INMET + previsão do JMA)",
-      "JMA bruto (dashboard)": "Plano B: dias sem medição (JMA no lugar do INMET)",
-      "JMA bruto": "Plano B: dias sem medição (JMA no lugar do INMET)",
-      "JMA mapeado (dashboard)": "Plano B: dias sem medição (JMA no lugar do INMET)",
+      "JMA bruto (dashboard)": "Dias sem medição (JMA no lugar do INMET)",
+      "JMA bruto": "Dias sem medição (JMA no lugar do INMET)",
+      "JMA mapeado (dashboard)": "Dias sem medição (JMA no lugar do INMET)",
       "Previsão numérica pura (JMA)": "Previsão do JMA, sem correção", "Climatologia": "Climatologia (média do mês)" };
     const planoB = ["JMA bruto (dashboard)", "JMA bruto", "JMA mapeado (dashboard)"].find(k => b.metricas[k]);
     const ordem = ["INMET real", planoB, "Previsão numérica pura (JMA)", "Climatologia"].filter(Boolean);
