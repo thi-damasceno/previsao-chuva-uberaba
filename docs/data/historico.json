@@ -53,9 +53,9 @@
  },
  {
   "data_alvo": "2026-11-05",
-  "probabilidade": 0.333,
-  "limiar": 0.31,
+  "probabilidade": 0.37,
+  "limiar": 0.34,
   "jma_chuva_mm": 0.6,
-  "gerado_em": "2026-11-04T18:51-03:00"
+  "gerado_em": "2026-11-04T23:24-03:00"
  }
 ]
