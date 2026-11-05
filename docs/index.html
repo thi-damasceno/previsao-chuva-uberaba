@@ -598,6 +598,11 @@ footer a { color: var(--text-secondary); }
     if (parent) parent.appendChild(e);
     return e;
   };
+  // "2026-11-05T07:59-03:00" -> "05/11/2026 às 07:59" (o horário já vem em Brasília)
+  const dataHora = s => s ? s.slice(8, 10) + "/" + s.slice(5, 7) + "/" + s.slice(0, 4) + " às " + s.slice(11, 16) : "—";
+  // "2026-11-05 10:00:00" (UTC) -> "05/11/2026 às 07:00" (Brasília, UTC-3)
+  const utcParaBR = s => { const d = new Date(s.replace(" ", "T") + "Z"); d.setUTCHours(d.getUTCHours() - 3);
+    return dataHora(d.toISOString()); };
   const hojeBR = () => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date());
   const getJSON = async url => { const r = await fetch(url + "?v=" + Date.now()); if (!r.ok) throw new Error(url); return r.json(); };
   const icone = (id, titulo) => `<svg viewBox="0 0 64 64" role="img" aria-label="${titulo}"><title>${titulo}</title><use href="#${id}"/></svg>`;
@@ -791,7 +796,7 @@ footer a { color: var(--text-secondary); }
     const rotulo = p.data_alvo === hojeBR() ? "Hoje" : (atrasada ? "Dia" : "Amanhã");
     if (atrasada && p.status !== "erro") {
       $("status").classList.add("show");
-      $("statusTxt").textContent = `A previsão para amanhã ainda não foi gerada. Exibindo a última disponível, emitida em ${p.gerado_em ? p.gerado_em.slice(0, 16).replace("T", " ") : "—"}.`;
+      $("statusTxt").textContent = `A previsão para amanhã ainda não foi gerada. Exibindo a última disponível, emitida em ${dataHora(p.gerado_em)}.`;
     }
     const previa = p.oficial === false;
     $("heroDate").textContent = rotulo + (previa ? " (prévia)" : "") + " · " + dLonga(p.data_alvo);
@@ -821,8 +826,8 @@ footer a { color: var(--text-secondary); }
       corDe: d => medido(d) ? "var(--series-1)" : "var(--estimado)",
       dica: d => `<b>${dCurta(d.data)}</b><br>Chuva ${medido(d) ? "medida" : "estimada (JMA)"}: <b>${fmt(valorDia(d))} mm</b><br><span class="k">Máx.</span> ${fmt(d.temp_max_c)} °C · <span class="k">Umid.</span> ${fmt(d.umid_media_pct, 0)}%` });
     const m = p.modelo || {}, ob = p.observacoes || {};
-    $("infoModelo").textContent = `Atualizado em ${p.gerado_em ? p.gerado_em.replace("T", " ") : "—"} · modelo treinado até ${m.treinado_ate || "—"}` +
-      (ob.ultima_medicao_utc ? ` · última medição do INMET: ${ob.ultima_medicao_utc.slice(0, 16)} UTC` : "");
+    $("infoModelo").textContent = `Atualizado em ${dataHora(p.gerado_em)} (horário de Brasília) · modelo treinado até ${m.treinado_ate || "—"}` +
+      (ob.ultima_medicao_utc ? ` · última medição do INMET: ${utcParaBR(ob.ultima_medicao_utc)}` : "");
   }
 
   function renderHoje() {
