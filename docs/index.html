@@ -793,7 +793,8 @@ footer a { color: var(--text-secondary); }
       $("status").classList.add("show");
       $("statusTxt").textContent = `A previsão para amanhã ainda não foi gerada. Exibindo a última disponível, emitida em ${p.gerado_em ? p.gerado_em.slice(0, 16).replace("T", " ") : "—"}.`;
     }
-    $("heroDate").textContent = rotulo + " · " + dLonga(p.data_alvo);
+    const previa = p.oficial === false;
+    $("heroDate").textContent = rotulo + (previa ? " (prévia)" : "") + " · " + dLonga(p.data_alvo);
     $("heroNum").innerHTML = Math.round(p.probabilidade * 100) + "<small>%</small>";
     $("heroCat").textContent = p.categoria;
     const c = condicao(p);
@@ -801,7 +802,8 @@ footer a { color: var(--text-secondary); }
     $("meterFill").style.width = (p.probabilidade * 100) + "%";
     $("meterTick").style.left = `calc(${p.limiar * 100}% - 1px)`;
     $("meter").setAttribute("aria-label", `Probabilidade de chuva: ${pct(p.probabilidade)}. Limiar de decisão do modelo: ${pct(p.limiar)}.`);
-    $("meterLegend").innerHTML = `Traço = limiar de decisão do modelo (${pct(p.limiar)}). ${rotulo === "Amanhã" ? "Amanhã está" : "A probabilidade está"} ${p.vai_chover ? "acima" : "abaixo"} dele: o modelo classifica o dia como <b>${p.vai_chover ? "chuvoso" : "seco"}</b>.`;
+    $("meterLegend").innerHTML = `Traço = limiar de decisão do modelo (${pct(p.limiar)}). ${rotulo === "Amanhã" ? "Amanhã está" : "A probabilidade está"} ${p.vai_chover ? "acima" : "abaixo"} dele: o modelo classifica o dia como <b>${p.vai_chover ? "chuvoso" : "seco"}</b>.` +
+      (previa ? `<br><b>Prévia:</b> o INMET mediu ${p.horas_medidas_hoje ?? "poucas"} das 24 horas de hoje até agora. A previsão oficial sai na rodada da noite (~23h), com o dia completo, e pode mudar.` : "");
     const j = p.jma_amanha || {}, h = p.condicoes_hoje || {};
     $("kpisAmanha").innerHTML =
       kpi("Chuva prevista (JMA)", fmt(j.chuva_mm), " mm", "gota") + kpi("Horas com chuva", fmt(j.horas_chuva, 0), " h", "relogio") +
@@ -828,14 +830,15 @@ footer a { color: var(--text-secondary); }
     // a previsão de hoje é a que foi emitida ontem (data_alvo = hoje)
     const reg = (p && p.data_alvo === hoje && p.probabilidade != null) ? p : hist.find(h => h.data_alvo === hoje);
     if (!reg || reg.probabilidade == null || (p && p.data_alvo === hoje)) { $("heroHoje").textContent = ""; return; }
-    const lim = reg.limiar != null ? reg.limiar : (p && p.limiar);
+    const lim = (p && p.limiar != null) ? p.limiar : reg.limiar;   // limiar único do modelo
     const classe = lim != null ? ` · ${reg.probabilidade >= lim ? "acima" : "abaixo"} do limiar (${pct(lim)})` : "";
     $("heroHoje").innerHTML = `Hoje (${dCurta(hoje)}): <b>${pct(reg.probabilidade)}</b> de chance de chover${classe} — previsão emitida na véspera.`;
   }
 
   function renderHistorico(hist) {
+    const limModelo = ultimos.p && ultimos.p.limiar;
     const dados = hist.map(h => ({ data_alvo: h.data_alvo, p: h.probabilidade, mm: h.jma_chuva_mm,
-      lim: h.limiar, obs: h.chuva_obs_mm, choveu: h.choveu }));
+      lim: limModelo != null ? limModelo : h.limiar, obs: h.chuva_obs_mm, choveu: h.choveu, previa: !!h.previa }));
     const verif = dados.filter(d => d.choveu != null && d.lim != null);
     const acertos = verif.filter(d => (d.p >= d.lim) === d.choveu).length;
     const placar = verif.length ? ` · acertou ${acertos} de ${verif.length} dias já verificados (${Math.round(100 * acertos / verif.length)}%)` : "";
@@ -843,7 +846,7 @@ footer a { color: var(--text-secondary); }
       ? `Probabilidade calculada a cada dia para o dia seguinte — o histórico começa a se formar a partir de ${dados.length ? dCurta(dados[0].data_alvo) : "hoje"}`
       : "Probabilidade calculada a cada dia para o dia seguinte (últimos 180 dias)") + placar;
     linhaProb($("chHistorico"), dados.slice(-180), { altura: dados.length < 7 ? 160 : 240, marcar: d => d.choveu === true,
-      dica: d => `<b>${dCurta(d.data_alvo)}</b><br>Probabilidade: <b>${pct(d.p)}</b><br><span class="k">JMA previu</span> ${fmt(d.mm)} mm` +
+      dica: d => `<b>${dCurta(d.data_alvo)}</b>${d.previa ? " (prévia)" : ""}<br>Probabilidade: <b>${pct(d.p)}</b><br><span class="k">JMA previu</span> ${fmt(d.mm)} mm` +
         (d.obs != null ? `<br>Medido (INMET): <b>${fmt(d.obs)} mm</b>${d.choveu ? " ☂" : ""}` : `<br><span class="k">Aguardando medição</span>`) });
   }
 
@@ -885,7 +888,7 @@ footer a { color: var(--text-secondary); }
   matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", desenharFolhas);
   desenharFolhas();
 
-  getJSON("data/previsao.json").then(p => { ultimos.p = p; renderPrevisao(p); renderHoje(); }).catch(() => {
+  getJSON("data/previsao.json").then(p => { ultimos.p = p; renderPrevisao(p); renderHoje(); if (ultimos.h) renderHistorico(ultimos.h); }).catch(() => {
     $("heroDate").textContent = "Previsão ainda não disponível";
     $("status").classList.add("show"); $("statusTxt").textContent = "Não foi possível carregar a previsão.";
   });
