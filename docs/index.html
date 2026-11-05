@@ -159,7 +159,7 @@ h2 { font-size: 16px; margin: 0 0 2px; font-weight: 650; }
 .meter-tick { position: absolute; top: -6px; bottom: -6px; width: 2px; background: var(--text-primary); border-radius: 1px; }
 .meter-scale { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
 .meter-legend { font-size: 12px; color: var(--text-secondary); margin-top: 8px; }
-.faixa-hoje { display: none; align-items: center; gap: 10px; border-radius: 12px; padding: 10px 14px; margin-bottom: 16px; font-size: 14px;
+.faixa-hoje { display: none; align-items: center; gap: 10px; border-radius: 12px; padding: 10px 14px; margin-top: 16px; margin-bottom: 16px; font-size: 14px;
   border: 1px solid var(--border); background: var(--surface-1); box-shadow: var(--shadow-lg); color: var(--text-primary); }
 .faixa-hoje.show { display: flex; }
 .faixa-hoje .ic { width: 26px; height: 26px; border-radius: 8px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; flex: none; }
@@ -812,7 +812,7 @@ footer a { color: var(--text-secondary); }
     $("meterTick").style.left = `calc(${p.limiar * 100}% - 1px)`;
     $("meter").setAttribute("aria-label", `Probabilidade de chuva: ${pct(p.probabilidade)}. Limiar de decisão do modelo: ${pct(p.limiar)}.`);
     $("meterLegend").innerHTML = `Traço = limiar de decisão do modelo (${pct(p.limiar)}). ${rotulo === "Amanhã" ? "Amanhã está" : "A probabilidade está"} ${p.vai_chover ? "acima" : "abaixo"} dele: o modelo classifica o dia como <b>${p.vai_chover ? "chuvoso" : "seco"}</b>.` +
-      (previa ? `<br><b>Prévia:</b> o INMET mediu ${p.horas_medidas_hoje ?? "poucas"} das 24 horas de hoje até agora. A previsão oficial sai na rodada da noite (~23h), com o dia completo, e pode mudar.` : "");
+      (previa ? `<br><b>Prévia:</b> o INMET mediu ${p.horas_medidas_hoje ?? "poucas"} das 24 horas de hoje até agora.` : "");
     const j = p.jma_amanha || {}, h = p.condicoes_hoje || {};
     $("kpisAmanha").innerHTML =
       kpi("Chuva prevista (JMA)", fmt(j.chuva_mm), " mm", "gota") + kpi("Horas com chuva", fmt(j.horas_chuva, 0), " h", "relogio") +
