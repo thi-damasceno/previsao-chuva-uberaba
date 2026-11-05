@@ -2,10 +2,11 @@ name: Previsão diária de chuva
 
 on:
   schedule:
-    # A cada 2 horas (minuto 17 para fugir do pico de agendamentos do GitHub no minuto 0).
-    # Cada execução coleta o INMET; a previsão só é recalculada quando chegam medições novas.
-    # O disparo das 02:17 UTC (23:17 em Brasília) pega o dia de hoje quase completo.
-    - cron: "17 */2 * * *"
+    # De hora em hora (minuto 17 para fugir do pico do minuto 0). O GitHub atrasa ou pula
+    # disparos agendados com frequência; rodar a cada hora reduz o tempo sem atualização.
+    # Cada execução coleta o INMET; a previsão só é recalculada quando chegam medições novas
+    # ou quando ainda não existe previsão com base no dia de hoje.
+    - cron: "17 * * * *"
   workflow_dispatch:           # permite rodar manualmente pela aba Actions
 
 permissions:
