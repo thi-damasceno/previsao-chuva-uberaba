@@ -159,8 +159,11 @@ h2 { font-size: 16px; margin: 0 0 2px; font-weight: 650; }
 .meter-tick { position: absolute; top: -6px; bottom: -6px; width: 2px; background: var(--text-primary); border-radius: 1px; }
 .meter-scale { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
 .meter-legend { font-size: 12px; color: var(--text-secondary); margin-top: 8px; }
-.hero-hoje { font-size: 14px; color: var(--text-primary); margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--surface-2); }
-.hero-hoje:empty { display: none; }
+.faixa-hoje { display: none; align-items: center; gap: 10px; border-radius: 12px; padding: 10px 14px; margin-bottom: 16px; font-size: 14px;
+  border: 1px solid var(--border); background: var(--surface-1); box-shadow: var(--shadow-lg); color: var(--text-primary); }
+.faixa-hoje.show { display: flex; }
+.faixa-hoje .ic { width: 26px; height: 26px; border-radius: 8px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; flex: none; }
+.faixa-hoje .ic svg { width: 15px; height: 15px; }
 
 .kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .kpi { background: var(--surface-2); border-radius: 12px; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; }
@@ -349,6 +352,7 @@ footer a { color: var(--text-secondary); }
 
 <main class="wrap">
   <div class="status" id="status" role="status"><span class="ico">!</span><span id="statusTxt"></span></div>
+  <div class="faixa-hoje" id="faixaHoje"><span class="ic" id="faixaHojeIc"></span><span id="heroHoje"></span></div>
 
   <div class="grid g-hero">
     <div class="card lift" aria-live="polite">
@@ -367,7 +371,6 @@ footer a { color: var(--text-secondary); }
       </div>
       <div class="meter-scale"><span>0%</span><span>50%</span><span>100%</span></div>
       <div class="meter-legend" id="meterLegend"></div>
-      <div class="hero-hoje" id="heroHoje"></div>
     </div>
     <div class="card lift">
       <h2>Previsão para amanhã</h2>
@@ -834,10 +837,12 @@ footer a { color: var(--text-secondary); }
     const p = ultimos.p, hist = ultimos.h || [], hoje = hojeBR();
     // a previsão de hoje é a que foi emitida ontem (data_alvo = hoje)
     const reg = (p && p.data_alvo === hoje && p.probabilidade != null) ? p : hist.find(h => h.data_alvo === hoje);
-    if (!reg || reg.probabilidade == null || (p && p.data_alvo === hoje)) { $("heroHoje").textContent = ""; return; }
+    if (!reg || reg.probabilidade == null || (p && p.data_alvo === hoje)) { $("heroHoje").textContent = ""; $("faixaHoje").classList.remove("show"); return; }
     const lim = (p && p.limiar != null) ? p.limiar : reg.limiar;   // limiar único do modelo
     const classe = lim != null ? ` · ${reg.probabilidade >= lim ? "acima" : "abaixo"} do limiar (${pct(lim)})` : "";
     $("heroHoje").innerHTML = `Hoje (${dCurta(hoje)}): <b>${pct(reg.probabilidade)}</b> de chance de chover${classe} — previsão emitida na véspera.`;
+    $("faixaHojeIc").innerHTML = IC.gota;
+    $("faixaHoje").classList.add("show");
   }
 
   function renderHistorico(hist) {
