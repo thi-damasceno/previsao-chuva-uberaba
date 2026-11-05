@@ -31,6 +31,7 @@ DIR_DADOS = RAIZ / "docs" / "data"
 ARQ_PREV = DIR_DADOS / "previsao.json"
 ARQ_HIST = DIR_DADOS / "historico.json"
 FUSO = ZoneInfo("America/Sao_Paulo")
+HORAS_MIN_OFICIAL = 20   # mesmo critério do inmet_obs.diario para considerar o dia medido pelo INMET
 
 
 def categoria(p, limiar):
@@ -64,10 +65,18 @@ def main():
     h_obs_jma, h_prev = pc.baixar_operacional(past_days=40, forecast_days=3)
     tabela, fonte, dia = pc.montar_tabela_hibrida(obs_d, h_obs_jma, h_prev, mapa_json["variaveis"])
 
-    # Limiar: o do modelo quando hoje é medido pelo INMET (cenário do treino);
-    # o limiar do cenário JMA quando hoje não tem medição.
     fonte_hoje = fonte.get(hoje, "JMA")
-    limiar = pacote["limiar"] if fonte_hoje == "INMET" else mapa_json.get("limiar_dashboard", pacote["limiar"])
+    # Limiar único: sempre o do modelo (ajustado no treino com dias completos do INMET).
+    limiar = pacote["limiar"]
+
+    # Previsão oficial só quando o dia de hoje já tem horas suficientes medidas pelo INMET
+    # (o modelo foi treinado com dias completos). Antes disso, a rodada é uma prévia.
+    horas_hoje = int(obs_d["n_horas_precip"].get(hoje, 0)) if len(obs_d) and "n_horas_precip" in obs_d else 0
+    if not len(obs_d) or "n_horas_precip" not in obs_d:
+        h_loc = obs_h["precip_mm"].copy() if len(obs_h) else pd.Series(dtype=float)
+        h_loc.index = h_loc.index - pd.Timedelta(hours=3)
+        horas_hoje = int(h_loc.loc[str(hoje.date())].notna().sum()) if len(h_loc.loc[str(hoje.date()):]) else 0
+    oficial = horas_hoje >= HORAS_MIN_OFICIAL
 
     prob, X = pc.prever(pacote, tabela, hoje)
     n_faltando = int(X.isna().sum())
@@ -109,6 +118,9 @@ def main():
         "categoria": categoria(prob, limiar),
         "limiar": limiar,
         "vai_chover": bool(prob >= limiar),
+        "oficial": oficial,
+        "horas_medidas_hoje": horas_hoje,
+        "horas_min_oficial": HORAS_MIN_OFICIAL,
         "jma_amanha": {
             "chuva_mm": num(X.get(nwp + "precip_mm")),
             "horas_chuva": num(X.get(nwp + "horas_chuva"), 0),
@@ -138,13 +150,21 @@ def main():
     }
     salvar_json(ARQ_PREV, previsao)
 
-    # Histórico: uma linha por data-alvo; preenche a chuva observada quando o INMET tiver medido o dia
+    # Histórico: uma linha por data-alvo. A rodada oficial substitui qualquer registro anterior;
+    # uma prévia só entra se ainda não houver registro (cobre o caso de a rodada da noite falhar)
+    # e nunca substitui uma previsão oficial.
     hist = json.loads(ARQ_HIST.read_text(encoding="utf-8")) if ARQ_HIST.exists() else []
-    hist = [h for h in hist if h["data_alvo"] != previsao["data_alvo"]]
-    hist.append({"data_alvo": previsao["data_alvo"], "probabilidade": previsao["probabilidade"],
-                 "limiar": limiar, "jma_chuva_mm": previsao["jma_amanha"]["chuva_mm"],
-                 "gerado_em": previsao["gerado_em"]})
+    existente = next((h for h in hist if h["data_alvo"] == previsao["data_alvo"]), None)
+    if oficial or existente is None or existente.get("previa"):
+        hist = [h for h in hist if h["data_alvo"] != previsao["data_alvo"]]
+        novo = {"data_alvo": previsao["data_alvo"], "probabilidade": previsao["probabilidade"],
+                "limiar": limiar, "jma_chuva_mm": previsao["jma_amanha"]["chuva_mm"],
+                "gerado_em": previsao["gerado_em"]}
+        if not oficial:
+            novo["previa"] = True
+        hist.append(novo)
     for h in hist:
+        h["limiar"] = limiar          # limiar único em todo o histórico
         d = pd.Timestamp(h["data_alvo"])
         if d < hoje and len(obs_d) and pd.notna(obs_d["precip_mm"].get(d)):
             h["chuva_obs_mm"] = num(obs_d["precip_mm"][d])
@@ -152,7 +172,8 @@ def main():
     hist = sorted(hist, key=lambda h: h["data_alvo"])[-730:]
     salvar_json(ARQ_HIST, hist)
 
-    print(f"{previsao['data_alvo']}: {prob:.0%} ({previsao['categoria']}) | hoje medido por: {fonte_hoje} | "
+    print(f"{previsao['data_alvo']}: {prob:.0%} ({previsao['categoria']}) | "
+          f"{'oficial' if oficial else 'prévia'} ({horas_hoje} h medidas hoje) | hoje medido por: {fonte_hoje} | "
           f"dias INMET nos últimos 30: {previsao['observacoes']['dias_inmet_30d']} | features ausentes: {n_faltando}")
 
 
