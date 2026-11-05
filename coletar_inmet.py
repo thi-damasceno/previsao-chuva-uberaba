@@ -95,7 +95,10 @@ def coletar_pagina():
     DIR_DIAG.mkdir(parents=True, exist_ok=True)
     diag = {"inicio": datetime.now(FUSO).isoformat(timespec="seconds"), "url": URL, "respostas_json": []}
     hoje_local = datetime.now(FUSO).date()
-    ini, fim = hoje_local - timedelta(days=DIAS_ATRAS), hoje_local
+    # A tabela TEMPO filtra por data UTC. Das 21h às 23h59 de Brasília já é "amanhã" em UTC,
+    # então o fim do período é a data UTC atual — senão as últimas 3 horas do dia local ficam de fora.
+    fim = datetime.now(ZoneInfo("UTC")).date()
+    ini = hoje_local - timedelta(days=DIAS_ATRAS)
     jsons, csv_bytes = [], None
 
     with sync_playwright() as p:
