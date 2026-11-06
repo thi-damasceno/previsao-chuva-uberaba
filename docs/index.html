@@ -841,7 +841,7 @@ footer a { color: var(--text-secondary); }
     if (!reg || reg.probabilidade == null || (p && p.data_alvo === hoje)) { $("heroHoje").textContent = ""; $("faixaHoje").classList.remove("show"); return; }
     const lim = (p && p.limiar != null) ? p.limiar : reg.limiar;   // limiar único do modelo
     const classe = lim != null ? ` O modelo indicou ${reg.probabilidade >= lim ? "possibilidade de chuva" : "pouca chance de chuva"}.` : "";
-    $("heroHoje").innerHTML = `Hoje (${dCurta(hoje)}.): <b>${pct(reg.probabilidade)}</b> de chance de chover segundo a previsão emitida na véspera.${classe}`;
+    $("heroHoje").innerHTML = `Hoje (${dCurta(hoje)}.): <b>${pct(reg.probabilidade)}</b> de chance de chover, segundo a previsão emitida na véspera.${classe}`;
     $("faixaHojeIc").innerHTML = IC.gota;
     $("faixaHoje").classList.add("show");
   }
