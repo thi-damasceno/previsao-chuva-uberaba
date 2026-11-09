@@ -1,6 +1,6 @@
 {
  "status": "ok",
- "gerado_em": "2026-11-08T22:48-03:00",
+ "gerado_em": "2026-11-08T23:15-03:00",
  "data_base": "2026-11-08",
  "data_alvo": "2026-11-09",
  "probabilidade": 0.187,
@@ -8,7 +8,7 @@
  "limiar": 0.34,
  "vai_chover": false,
  "oficial": true,
- "horas_medidas_hoje": 22,
+ "horas_medidas_hoje": 23,
  "horas_min_oficial": 20,
  "jma_amanha": {
   "chuva_mm": 0.0,
