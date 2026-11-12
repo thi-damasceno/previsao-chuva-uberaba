@@ -125,10 +125,10 @@
  },
  {
   "data_alvo": "2026-11-13",
-  "probabilidade": 0.504,
+  "probabilidade": 0.187,
   "limiar": 0.34,
-  "jma_chuva_mm": 1.8,
-  "gerado_em": "2026-11-12T15:17-03:00",
+  "jma_chuva_mm": 0.0,
+  "gerado_em": "2026-11-12T19:16-03:00",
   "previa": true
  }
 ]
