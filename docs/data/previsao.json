@@ -1,190 +1,183 @@
 {
  "status": "ok",
- "gerado_em": "2026-11-11T23:16-03:00",
- "data_base": "2026-11-11",
- "data_alvo": "2026-11-12",
- "probabilidade": 0.568,
+ "gerado_em": "2026-11-12T03:16-03:00",
+ "data_base": "2026-11-12",
+ "data_alvo": "2026-11-13",
+ "probabilidade": 0.504,
  "categoria": "Possível",
  "limiar": 0.34,
  "vai_chover": true,
- "oficial": true,
- "horas_medidas_hoje": 21,
+ "oficial": false,
+ "horas_medidas_hoje": 3,
  "horas_min_oficial": 20,
  "jma_amanha": {
-  "chuva_mm": 6.6,
+  "chuva_mm": 4.4,
   "horas_chuva": 12.0,
-  "nuvens_pct": 62.0,
-  "umid_pct": 80.0,
-  "temp_max_c": 25.0
+  "nuvens_pct": 32.0,
+  "umid_pct": 84.0,
+  "temp_max_c": 25.9
  },
  "condicoes_hoje": {
-  "chuva_mm": 0.0,
+  "chuva_mm": 9.6,
   "chuva_acum_7d_mm": 48.0,
-  "chuva_acum_30d_mm": 200.8,
+  "chuva_acum_30d_mm": 200.6,
   "dias_medidos_7d": 6,
-  "dias_sem_chuva": 2.0,
-  "umid_media_pct": 78.0,
-  "temp_max_c": 28.8
+  "dias_sem_chuva": 3.0,
+  "umid_media_pct": 82.0,
+  "temp_max_c": 27.0
  },
  "observacoes": {
-  "fonte_hoje": "INMET",
-  "dias_inmet_30d": 30,
-  "ultima_medicao_utc": "2026-11-12 02:00:00"
+  "fonte_hoje": "JMA",
+  "dias_inmet_30d": 29,
+  "ultima_medicao_utc": "2026-11-12 06:00:00"
  },
  "horario_amanha": [
   {
    "hora": "00:00",
    "chuva_mm": 0.0,
-   "nuvens_pct": 69.0,
-   "temp_c": 22.5
+   "nuvens_pct": 87.0,
+   "temp_c": 20.8
   },
   {
    "hora": "01:00",
    "chuva_mm": 0.0,
-   "nuvens_pct": 64.0,
-   "temp_c": 22.2
+   "nuvens_pct": 89.0,
+   "temp_c": 20.6
   },
   {
    "hora": "02:00",
    "chuva_mm": 0.0,
-   "nuvens_pct": 59.0,
-   "temp_c": 22.0
+   "nuvens_pct": 89.0,
+   "temp_c": 20.6
   },
   {
    "hora": "03:00",
    "chuva_mm": 0.0,
-   "nuvens_pct": 56.0,
-   "temp_c": 22.0
+   "nuvens_pct": 85.0,
+   "temp_c": 20.7
   },
   {
    "hora": "04:00",
    "chuva_mm": 0.0,
-   "nuvens_pct": 55.0,
-   "temp_c": 22.1
+   "nuvens_pct": 75.0,
+   "temp_c": 21.2
   },
   {
    "hora": "05:00",
    "chuva_mm": 0.0,
-   "nuvens_pct": 54.0,
-   "temp_c": 22.4
+   "nuvens_pct": 60.0,
+   "temp_c": 22.0
   },
   {
    "hora": "06:00",
    "chuva_mm": 0.0,
-   "nuvens_pct": 54.0,
-   "temp_c": 22.9
+   "nuvens_pct": 43.0,
+   "temp_c": 23.0
   },
   {
    "hora": "07:00",
    "chuva_mm": 0.0,
-   "nuvens_pct": 55.0,
-   "temp_c": 23.3
+   "nuvens_pct": 26.0,
+   "temp_c": 23.9
   },
   {
    "hora": "08:00",
    "chuva_mm": 0.0,
-   "nuvens_pct": 56.0,
-   "temp_c": 23.7
+   "nuvens_pct": 12.0,
+   "temp_c": 24.8
   },
   {
    "hora": "09:00",
    "chuva_mm": 0.0,
-   "nuvens_pct": 58.0,
-   "temp_c": 24.0
+   "nuvens_pct": 3.0,
+   "temp_c": 25.4
   },
   {
    "hora": "10:00",
    "chuva_mm": 0.5,
-   "nuvens_pct": 60.0,
-   "temp_c": 24.3
+   "nuvens_pct": 1.0,
+   "temp_c": 25.7
   },
   {
    "hora": "11:00",
    "chuva_mm": 0.5,
-   "nuvens_pct": 64.0,
-   "temp_c": 24.5
+   "nuvens_pct": 4.0,
+   "temp_c": 25.8
   },
   {
    "hora": "12:00",
    "chuva_mm": 0.5,
-   "nuvens_pct": 68.0,
-   "temp_c": 24.8
+   "nuvens_pct": 10.0,
+   "temp_c": 25.9
   },
   {
    "hora": "13:00",
    "chuva_mm": 0.5,
-   "nuvens_pct": 72.0,
-   "temp_c": 24.9
+   "nuvens_pct": 17.0,
+   "temp_c": 25.8
   },
   {
    "hora": "14:00",
    "chuva_mm": 0.5,
-   "nuvens_pct": 75.0,
-   "temp_c": 25.0
+   "nuvens_pct": 22.0,
+   "temp_c": 25.7
   },
   {
    "hora": "15:00",
    "chuva_mm": 0.5,
-   "nuvens_pct": 76.0,
-   "temp_c": 24.9
+   "nuvens_pct": 25.0,
+   "temp_c": 25.5
   },
   {
    "hora": "16:00",
-   "chuva_mm": 0.6,
-   "nuvens_pct": 76.0,
-   "temp_c": 24.7
+   "chuva_mm": 0.2,
+   "nuvens_pct": 24.0,
+   "temp_c": 25.2
   },
   {
    "hora": "17:00",
-   "chuva_mm": 0.6,
-   "nuvens_pct": 74.0,
-   "temp_c": 24.2
+   "chuva_mm": 0.2,
+   "nuvens_pct": 22.0,
+   "temp_c": 24.8
   },
   {
    "hora": "18:00",
-   "chuva_mm": 0.6,
-   "nuvens_pct": 72.0,
-   "temp_c": 23.7
+   "chuva_mm": 0.2,
+   "nuvens_pct": 18.0,
+   "temp_c": 24.3
   },
   {
    "hora": "19:00",
-   "chuva_mm": 0.6,
-   "nuvens_pct": 68.0,
-   "temp_c": 23.1
+   "chuva_mm": 0.2,
+   "nuvens_pct": 14.0,
+   "temp_c": 23.8
   },
   {
    "hora": "20:00",
-   "chuva_mm": 0.6,
-   "nuvens_pct": 64.0,
-   "temp_c": 22.6
+   "chuva_mm": 0.2,
+   "nuvens_pct": 10.0,
+   "temp_c": 23.3
   },
   {
    "hora": "21:00",
-   "chuva_mm": 0.6,
-   "nuvens_pct": 58.0,
-   "temp_c": 22.1
+   "chuva_mm": 0.2,
+   "nuvens_pct": 8.0,
+   "temp_c": 22.9
   },
   {
    "hora": "22:00",
-   "chuva_mm": 0.0,
-   "nuvens_pct": 50.0,
-   "temp_c": 21.7
+   "chuva_mm": 0.1,
+   "nuvens_pct": 7.0,
+   "temp_c": 22.5
   },
   {
    "hora": "23:00",
-   "chuva_mm": 0.0,
-   "nuvens_pct": 39.0,
-   "temp_c": 21.3
+   "chuva_mm": 0.1,
+   "nuvens_pct": 6.0,
+   "temp_c": 22.1
   }
  ],
  "ultimos_dias": [
-  {
-   "data": "2026-10-29",
-   "chuva_mm": 36.0,
-   "fonte": "INMET",
-   "temp_max_c": 27.0,
-   "umid_media_pct": 96.0
-  },
   {
    "data": "2026-10-30",
    "chuva_mm": 0.2,
@@ -275,9 +268,16 @@
    "fonte": "INMET",
    "temp_max_c": 28.8,
    "umid_media_pct": 78.0
+  },
+  {
+   "data": "2026-11-12",
+   "chuva_mm": 9.6,
+   "fonte": "JMA",
+   "temp_max_c": 27.0,
+   "umid_media_pct": 82.0
   }
  ],
- "features_ausentes": 0,
+ "features_ausentes": 1,
  "modelo": {
   "treinado_ate": "2026-06-29",
   "fonte": "INMET A568 (medições) + JMA GSM via Open-Meteo (previsão para amanhã)"
