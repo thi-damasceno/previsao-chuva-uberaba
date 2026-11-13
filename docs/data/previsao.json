@@ -1,6 +1,6 @@
 {
  "status": "ok",
- "gerado_em": "2026-11-13T07:17-03:00",
+ "gerado_em": "2026-11-13T11:15-03:00",
  "data_base": "2026-11-13",
  "data_alvo": "2026-11-14",
  "probabilidade": 0.116,
@@ -8,7 +8,7 @@
  "limiar": 0.34,
  "vai_chover": false,
  "oficial": false,
- "horas_medidas_hoje": 8,
+ "horas_medidas_hoje": 12,
  "horas_min_oficial": 20,
  "jma_amanha": {
   "chuva_mm": 0.0,
@@ -19,8 +19,8 @@
  },
  "condicoes_hoje": {
   "chuva_mm": 0.0,
-  "chuva_acum_7d_mm": 53.4,
-  "chuva_acum_30d_mm": 177.6,
+  "chuva_acum_7d_mm": 53.6,
+  "chuva_acum_30d_mm": 177.8,
   "dias_medidos_7d": 6,
   "dias_sem_chuva": 0.0,
   "umid_media_pct": 71.0,
@@ -29,7 +29,7 @@
  "observacoes": {
   "fonte_hoje": "JMA",
   "dias_inmet_30d": 29,
-  "ultima_medicao_utc": "2026-11-13 10:00:00"
+  "ultima_medicao_utc": "2026-11-13 14:00:00"
  },
  "horario_amanha": [
   {
