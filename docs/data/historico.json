@@ -157,7 +157,9 @@
   "probabilidade": 0.827,
   "limiar": 0.34,
   "jma_chuva_mm": 9.4,
-  "gerado_em": "2026-11-15T23:17-03:00"
+  "gerado_em": "2026-11-15T23:17-03:00",
+  "chuva_obs_mm": 25.6,
+  "choveu": true
  },
  {
   "data_alvo": "2026-11-17",
@@ -165,5 +167,13 @@
   "limiar": 0.34,
   "jma_chuva_mm": 11.0,
   "gerado_em": "2026-11-16T23:15-03:00"
+ },
+ {
+  "data_alvo": "2026-11-18",
+  "probabilidade": 0.71,
+  "limiar": 0.34,
+  "jma_chuva_mm": 6.6,
+  "gerado_em": "2026-11-17T01:36-03:00",
+  "previa": true
  }
 ]
