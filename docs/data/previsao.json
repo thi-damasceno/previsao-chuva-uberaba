@@ -1,6 +1,6 @@
 {
  "status": "ok",
- "gerado_em": "2026-11-18T19:06-03:00",
+ "gerado_em": "2026-11-18T19:16-03:00",
  "data_base": "2026-11-18",
  "data_alvo": "2026-11-19",
  "probabilidade": 0.504,
@@ -8,7 +8,7 @@
  "limiar": 0.34,
  "vai_chover": true,
  "oficial": false,
- "horas_medidas_hoje": 18,
+ "horas_medidas_hoje": 19,
  "horas_min_oficial": 20,
  "jma_amanha": {
   "chuva_mm": 1.8,
@@ -23,13 +23,13 @@
   "chuva_acum_30d_mm": 167.8,
   "dias_medidos_7d": 6,
   "dias_sem_chuva": 1.0,
-  "umid_media_pct": 90.0,
-  "temp_max_c": 28.5
+  "umid_media_pct": 80.0,
+  "temp_max_c": 30.8
  },
  "observacoes": {
-  "fonte_hoje": "JMA",
+  "fonte_hoje": "misto",
   "dias_inmet_30d": 29,
-  "ultima_medicao_utc": "2026-11-18 21:00:00"
+  "ultima_medicao_utc": "2026-11-18 22:00:00"
  },
  "horario_amanha": [
   {
@@ -273,11 +273,11 @@
    "data": "2026-11-18",
    "chuva_mm": 7.4,
    "fonte": "JMA",
-   "temp_max_c": 28.5,
-   "umid_media_pct": 90.0
+   "temp_max_c": 30.8,
+   "umid_media_pct": 80.0
   }
  ],
- "features_ausentes": 1,
+ "features_ausentes": 0,
  "modelo": {
   "treinado_ate": "2026-06-29",
   "fonte": "INMET A568 (medições) + JMA GSM via Open-Meteo (previsão para amanhã)"
