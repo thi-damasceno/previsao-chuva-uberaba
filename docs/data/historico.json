@@ -238,5 +238,13 @@
   "jma_chuva_mm": 6.8,
   "gerado_em": "2026-11-24T23:17-03:00",
   "previa": true
+ },
+ {
+  "data_alvo": "2026-11-26",
+  "probabilidade": 0.827,
+  "limiar": 0.34,
+  "jma_chuva_mm": 32.2,
+  "gerado_em": "2026-11-25T03:17-03:00",
+  "previa": true
  }
 ]
