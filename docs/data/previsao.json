@@ -1,14 +1,14 @@
 {
  "status": "ok",
- "gerado_em": "2026-11-26T19:16-03:00",
+ "gerado_em": "2026-11-26T23:16-03:00",
  "data_base": "2026-11-26",
  "data_alvo": "2026-11-27",
- "probabilidade": 0.827,
- "categoria": "Muito provável",
+ "probabilidade": 0.71,
+ "categoria": "Provável",
  "limiar": 0.34,
  "vai_chover": true,
- "oficial": false,
- "horas_medidas_hoje": 17,
+ "oficial": true,
+ "horas_medidas_hoje": 21,
  "horas_min_oficial": 20,
  "jma_amanha": {
   "chuva_mm": 13.0,
@@ -18,18 +18,18 @@
   "temp_max_c": 26.1
  },
  "condicoes_hoje": {
-  "chuva_mm": 4.8,
+  "chuva_mm": 0.2,
   "chuva_acum_7d_mm": 29.2,
   "chuva_acum_30d_mm": 171.6,
   "dias_medidos_7d": 6,
   "dias_sem_chuva": 0.0,
-  "umid_media_pct": 79.0,
+  "umid_media_pct": 81.0,
   "temp_max_c": 31.6
  },
  "observacoes": {
-  "fonte_hoje": "misto",
-  "dias_inmet_30d": 29,
-  "ultima_medicao_utc": "2026-11-26 22:00:00"
+  "fonte_hoje": "INMET",
+  "dias_inmet_30d": 30,
+  "ultima_medicao_utc": "2026-11-27 02:00:00"
  },
  "horario_amanha": [
   {
@@ -271,10 +271,10 @@
   },
   {
    "data": "2026-11-26",
-   "chuva_mm": 4.8,
-   "fonte": "JMA",
+   "chuva_mm": 0.2,
+   "fonte": "INMET",
    "temp_max_c": 31.6,
-   "umid_media_pct": 79.0
+   "umid_media_pct": 81.0
   }
  ],
  "features_ausentes": 0,
