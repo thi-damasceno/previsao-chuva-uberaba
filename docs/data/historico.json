@@ -270,10 +270,10 @@
  },
  {
   "data_alvo": "2026-11-29",
-  "probabilidade": 0.827,
+  "probabilidade": 0.504,
   "limiar": 0.34,
-  "jma_chuva_mm": 20.0,
-  "gerado_em": "2026-11-28T03:18-03:00",
+  "jma_chuva_mm": 4.4,
+  "gerado_em": "2026-11-28T07:17-03:00",
   "previa": true
  }
 ]
